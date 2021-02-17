@@ -20,6 +20,7 @@
 		FA11CBE2257F995100A3E03D /* MyFriendsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA11CBE1257F995100A3E03D /* MyFriendsCell.swift */; };
 		FA13585025AA0D0F005D7B56 /* MatrixTheme1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = FA13584F25AA0D0F005D7B56 /* MatrixTheme1.mp3 */; };
 		FA13585425AA0FF9005D7B56 /* MatrixTheme2.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = FA13585325AA0FF9005D7B56 /* MatrixTheme2.mp3 */; };
+		FA1872A425DD5ACB00437CFE /* CustomGradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1872A325DD5ACB00437CFE /* CustomGradient.swift */; };
 		FA2C227A25850418006E4C25 /* CustomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA2C227925850418006E4C25 /* CustomView.swift */; };
 		FA3E670325963F0D00A52AB6 /* iCarousel.m in Sources */ = {isa = PBXBuildFile; fileRef = FA3E670125963F0D00A52AB6 /* iCarousel.m */; };
 		FA40B9BC257FDF6300F7BE44 /* MyGroupsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA40B9BB257FDF6300F7BE44 /* MyGroupsViewController.swift */; };
@@ -31,7 +32,6 @@
 		FA617BF2258E9E59006E957E /* NewsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA617BF1258E9E59006E957E /* NewsTableViewController.swift */; };
 		FA617BF6258E9E6B006E957E /* NewsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA617BF5258E9E6B006E957E /* NewsTableViewCell.swift */; };
 		FA617BF9258E9E74006E957E /* News.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA617BF8258E9E74006E957E /* News.swift */; };
-		FA6275A325D52D600015CAA6 /* MatrixTheme3.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = FA6275A225D52D600015CAA6 /* MatrixTheme3.mp3 */; };
 		FA65E6F7259B357B00D93760 /* LoginScreenAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA65E6F6259B357B00D93760 /* LoginScreenAnimation.swift */; };
 		FA65E6FA259B467700D93760 /* CustomAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA65E6F9259B467700D93760 /* CustomAnimator.swift */; };
 		FA65E6FD259B471400D93760 /* InteractiveTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA65E6FC259B471400D93760 /* InteractiveTransition.swift */; };
@@ -78,6 +78,7 @@
 		FA11CBE1257F995100A3E03D /* MyFriendsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFriendsCell.swift; sourceTree = "<group>"; };
 		FA13584F25AA0D0F005D7B56 /* MatrixTheme1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = MatrixTheme1.mp3; sourceTree = "<group>"; };
 		FA13585325AA0FF9005D7B56 /* MatrixTheme2.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = MatrixTheme2.mp3; sourceTree = "<group>"; };
+		FA1872A325DD5ACB00437CFE /* CustomGradient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomGradient.swift; sourceTree = "<group>"; };
 		FA2C227925850418006E4C25 /* CustomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomView.swift; sourceTree = "<group>"; };
 		FA3E670025963F0D00A52AB6 /* Vk black&white-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Vk black&white-Bridging-Header.h"; sourceTree = "<group>"; };
 		FA3E670125963F0D00A52AB6 /* iCarousel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iCarousel.m; sourceTree = "<group>"; };
@@ -91,7 +92,6 @@
 		FA617BF1258E9E59006E957E /* NewsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsTableViewController.swift; sourceTree = "<group>"; };
 		FA617BF5258E9E6B006E957E /* NewsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsTableViewCell.swift; sourceTree = "<group>"; };
 		FA617BF8258E9E74006E957E /* News.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = News.swift; sourceTree = "<group>"; };
-		FA6275A225D52D600015CAA6 /* MatrixTheme3.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = MatrixTheme3.mp3; path = ../../Music/MatrixTheme3.mp3; sourceTree = "<group>"; };
 		FA65E6F6259B357B00D93760 /* LoginScreenAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginScreenAnimation.swift; sourceTree = "<group>"; };
 		FA65E6F9259B467700D93760 /* CustomAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAnimator.swift; sourceTree = "<group>"; };
 		FA65E6FC259B471400D93760 /* InteractiveTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractiveTransition.swift; sourceTree = "<group>"; };
@@ -202,7 +202,6 @@
 		FA13584E25AA0CFA005D7B56 /* Sounds */ = {
 			isa = PBXGroup;
 			children = (
-				FA6275A225D52D600015CAA6 /* MatrixTheme3.mp3 */,
 				FA13585325AA0FF9005D7B56 /* MatrixTheme2.mp3 */,
 				FA13584F25AA0D0F005D7B56 /* MatrixTheme1.mp3 */,
 				FAC4768A25D94A5400DA251C /* Player.swift */,
@@ -295,6 +294,7 @@
 				FA65E6F6259B357B00D93760 /* LoginScreenAnimation.swift */,
 				FA65E6F9259B467700D93760 /* CustomAnimator.swift */,
 				FA65E6FC259B471400D93760 /* InteractiveTransition.swift */,
+				FA1872A325DD5ACB00437CFE /* CustomGradient.swift */,
 			);
 			path = "Animation and Graphics";
 			sourceTree = "<group>";
@@ -412,7 +412,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				FA091D462578E2310052A983 /* LaunchScreen.storyboard in Resources */,
-				FA6275A325D52D600015CAA6 /* MatrixTheme3.mp3 in Resources */,
 				FA091D432578E2310052A983 /* Assets.xcassets in Resources */,
 				FA8887B32586D2D900236369 /* WRed.gif in Resources */,
 				FA091D3E2578E2300052A983 /* Main.storyboard in Resources */,
@@ -499,6 +498,7 @@
 				FA617BF6258E9E6B006E957E /* NewsTableViewCell.swift in Sources */,
 				FA9037B325D68D89001F76C1 /* ClassPhotoVK.swift in Sources */,
 				FA93053B257FBE5D002E923A /* FriendsPhotoCell.swift in Sources */,
+				FA1872A425DD5ACB00437CFE /* CustomGradient.swift in Sources */,
 				FA8887B92586D6C300236369 /* WomanInRed.swift in Sources */,
 				FAEFCD122590C9C500B30D18 /* DateTimeControl.swift in Sources */,
 				FA930538257FBE2E002E923A /* FriendsPhotosViewController.swift in Sources */,

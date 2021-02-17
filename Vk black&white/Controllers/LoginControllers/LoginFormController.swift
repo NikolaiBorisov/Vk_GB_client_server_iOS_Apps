@@ -15,6 +15,7 @@ class LoginFormController: UIViewController {
     
     @IBAction func exit(segue: UIStoryboardSegue) {
     }
+    
     private let animator = Animator()
     
     @IBOutlet weak var cloudView: UIView!

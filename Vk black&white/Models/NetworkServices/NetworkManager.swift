@@ -58,6 +58,8 @@ class NetworkManager {
             .response { response in
                 switch response.result {
                 case .success(let data):
+                    guard
+                    let data = data else { return }
                     let json = JSON(data)
                     let photoJSONs = json["response"]["items"].arrayValue
                     let photos = photoJSONs.compactMap { Photo($0) }

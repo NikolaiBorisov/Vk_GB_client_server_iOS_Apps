@@ -8,21 +8,30 @@
 import Foundation
 import Alamofire
 import SwiftyJSON
+import RealmSwift
 
-struct Group {
+class Group: Object {
     
-    let id: Int
-    let name: String
-    let photo100: String
+    @objc dynamic var id: Int = 0
+    @objc dynamic var name: String = ""
+    @objc dynamic var photo100: String = ""
     
-    init(_ json: JSON) {
+    convenience init(_ json: JSON) {
+        self.init()
         self.id = json["id"].intValue
         self.name = json["name"].stringValue
         self.photo100 = json["photo_100"].stringValue
     }
+    
+    convenience init(id: Int, name: String, photo100: String) {
+        self.init()
+        self.id = id
+        self.name = name
+        self.photo100 = photo100
+    }
 }
 
-extension Group: Equatable {}
+//extension Group: Equatable {}
 
 //struct GroupResponse: Codable {
 //    let response: Response

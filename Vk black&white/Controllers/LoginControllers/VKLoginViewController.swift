@@ -10,6 +10,9 @@ import WebKit
 
 class VKLoginViewController: UIViewController {
     
+    @IBAction func exit(segue: UIStoryboardSegue) {
+    }
+    
     let netConstants = NetworkConstants()
     
     @IBOutlet weak var webView: WKWebView! {

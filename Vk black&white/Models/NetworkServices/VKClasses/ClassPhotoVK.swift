@@ -8,28 +8,45 @@
 import Foundation
 import Alamofire
 import SwiftyJSON
+import RealmSwift
 
-struct Photo {
-    let id: Int
-    let sizes: [PhotoSize]
+class Photo: Object {
+    @objc dynamic var id: Int = 0
+    var sizes: [PhotoSize] = [] //This property cannot be declared as a @objc dynamic
     
-    init(_ json: JSON) {
+    convenience init(_ json: JSON) {
+        self.init()
         self.id = json["id"].intValue
         self.sizes = json["sizes"].arrayValue.compactMap{ PhotoSize($0) } //Функция compactMap удаляет значения nil  из массива, тип возвращаемого значения больше не является опциональным
     }
+    
+    convenience init(id: Int, sizes: [PhotoSize]) {
+        self.init()
+        self.id = id
+        self.sizes = sizes
+    }
 }
 
-struct PhotoSize {
-    let type: String
-    let height: Int
-    let width: Int
-    let url: String
+class PhotoSize: Object {
+    @objc dynamic var type: String = ""
+    @objc dynamic var height: Int = 0
+    @objc dynamic var width: Int = 0
+    @objc dynamic var url: String = ""
     
-    init(_ json: JSON) {
+    convenience init(_ json: JSON) {
+        self.init()
         self.type = json["type"].stringValue
         self.height = json["height"].intValue
         self.width = json["width"].intValue
         self.url = json["url"].stringValue
+    }
+    
+    convenience init(type: String, height: Int, width: Int, url: String) {
+        self.init()
+        self.type = type
+        self.height = height
+        self.width = width
+        self.url = url
     }
 }
 
