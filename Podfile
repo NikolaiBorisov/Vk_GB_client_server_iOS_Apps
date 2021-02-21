@@ -9,6 +9,8 @@ target 'Vk black&white' do
  pod 'AlamofireImage', '~> 4.1'
  pod 'SwiftyJSON', '~> 5.0'
  pod 'Kingfisher', '~> 6.0'
+ pod 'RealmSwift'
+ 
 
   # Pods for Vk black&white
 

@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import  Alamofire
+import Alamofire
 import SwiftyJSON
 
 class NetworkManager {
@@ -21,7 +21,7 @@ class NetworkManager {
         let params: Parameters = [
             "access_token": Session.shared.token,
             "v": NetworkManager.version,
-            "fields": "photo_200"
+            "fields": "photo_200, online, status, city"
         ]
         
         AF.request(NetworkManager.baseUrl + path,
@@ -59,7 +59,7 @@ class NetworkManager {
                 switch response.result {
                 case .success(let data):
                     guard
-                    let data = data else { return }
+                        let data = data else { return }
                     let json = JSON(data)
                     let photoJSONs = json["response"]["items"].arrayValue
                     let photos = photoJSONs.compactMap { Photo($0) }
@@ -98,127 +98,83 @@ class NetworkManager {
     }
     
     //MARK: - Group Search
-    static func groupSearch(by query: String) {
+    
+   static func searchGroup(token: String, group name: String, completion: @escaping ([Group]) -> Void) {
         let path = "/method/groups.search"
         
         let params: Parameters = [
-            "access_token": Session.shared.token,
-            "extended": 1,
-            "v": NetworkManager.version,
-            "q": query,
-            "type": "group"
+            "access_token": token,
+            "q": name,
+            "v": "5.130"
         ]
-        
-        AF.request(self.baseUrl + path,
-                   method: .get,
-                   parameters: params)
-            .responseJSON { response in
-                guard let json = response.value else { return }
-                print("Global Groups: ", json)
+        AF.request(NetworkManager.baseUrl + path, method: .get, parameters: params).responseData { response in
+            guard let data = response.value else { return }
+            
+            if let groups = try? JSONDecoder().decode(GroupsResponse.self, from: data).response.items {
+                completion(groups)
+                print(groups)
             }
+        }
     }
-    
-}
-
-//let accessToken = Session.shared.token
+//    //Create url constructor
+//    var urlConstructor = URLComponents()
+//    let constants = NetworkConstants()
+//    let configuration: URLSessionConfiguration!
+//    let session: URLSession!
 //
-//     func loadFriends(completion: @escaping ([User]) -> Void) {
+//    init() {
+//        urlConstructor.scheme = "https"
+//        urlConstructor.host = "api.vk.com"
+//        configuration = URLSessionConfiguration.default
+//        session = URLSession(configuration: configuration)
+//    }
 //
-//        let baseURL = ""
-//        let path = "/method/friends.get"
-//        let url = baseURL + path
+//    func getAuthorizeRequest() -> URLRequest? {
+//        urlConstructor.host = "oauth.vk.com"
+//        urlConstructor.path = "/authorize"
 //
-//        let params: Parameters = [
-//            "access_token": Session.shared.token,
-//            "fields": "photo_200",
-//            "v": "5.92"
+//        urlConstructor.queryItems = [
+//            URLQueryItem(name: "client_id", value: constants.clientID),
+//            URLQueryItem(name: "scope", value: constants.scope),
+//            URLQueryItem(name: "display", value: "mobile"),
+//            URLQueryItem(name: "redirect_uri", value: "https://oauth.vk.com/blank.html"),
+//            URLQueryItem(name: "response_type", value: "token"),
+//            URLQueryItem(name: "v", value: constants.versionAPI)
 //        ]
 //
-//        AF.request(url,
-//                   method: .get,
-//                   parameters: params)
-//            .responseData { response in
-//            //guard let data = response.value else { return }
+//        guard
+//            let url = urlConstructor.url else { return nil }
+//        let request = URLRequest(url: url)
+//        return request
+//    }
+//    //Search group method
+//    func getSearchCommunity(text: String?, onComplete: @escaping ([Group]) -> Void, onError: @escaping (Error) -> Void) {
+//        urlConstructor.path = "/method/groups.search"
 //
-//            do {
-//                let user = try JSONDecoder().decode(MainUserResponse.self, from: response.value!)
-//                completion(user.response.items)
-//                print(user)
-//            } catch {
-//                print(error)
+//        urlConstructor.queryItems = [
+//            URLQueryItem(name: "q", value: text),
+//            URLQueryItem(name: "access_token", value: Session.shared.token),
+//            URLQueryItem(name: "v", value: constants.versionAPI)
+//        ]
+//        let task = session.dataTask(with: urlConstructor.url!) { (data, response, error) in
+//
+//            if error != nil {
+//                onError(ServerErrors.errorTask)
+//            }
+//
+//            guard let data = data else {
+//                onError(ServerErrors.noDataProvided)
+//                return
+//            }
+//            guard let communities = try? JSONDecoder().decode(Response<Group>.self, from: data).response.items else {
+//                onError(ServerErrors.failedToDecode)
+//                return
+//            }
+//            DispatchQueue.main.async {
+//                onComplete(communities)
 //            }
 //        }
+//        task.resume()
 //    }
 
-//2nd method
-//
-//enum VKMethods: String {
-//    case getGroups = "groups.get"
-//    case getPhotos = "photos.get"
-//    case getFriends = "friends.get"
-//    case searchGroup = "groups.search"
-//}
-//
-//class NetworkManager {
-//
-//    let apiURL = ""
-//    let version = "5.92"
-//
-//    var accessToken = Session.shared.token
-//    var userId: Int
-//
-//    init(accessToken: String, userId: Int) {
-//        self.accessToken = accessToken
-//        self.userId = userId
-//    }
-//
-//    private func makeRequest(accessToken: String,
-//                             vkMethod: VKMethods,
-//                             parameters: Parameters,
-//                             httpMethod: HTTPMethod = .get) {
-//        let requestURL = apiURL + vkMethod.rawValue
-//        let defaultParams: Parameters = [
-//            "access_token": accessToken,
-//            "user_id": userId,
-//            "v": version
-//        ]
-//        let finalParams = defaultParams.merging(parameters, uniquingKeysWith: { currentKey, _ in currentKey })
-//
-//        AF.request(requestURL, method: httpMethod, parameters: finalParams)
-//            .validate()
-//            .responseJSON { response in
-//                print(response.value ?? 0) //?
-//            }
-//    }
-//    func getFriends() {
-//        let params: Parameters = [
-//            "fields": "city," + "online"
-//        ]
-//        makeRequest(accessToken: accessToken, vkMethod: .getFriends, parameters: params)
-//    }
-//
-//    func getGroups() {
-//        let params: Parameters = [
-//            "fields": "city," + "country",
-//            "extended": 1
-//        ]
-//        makeRequest(accessToken: accessToken, vkMethod: .getGroups, parameters: params)
-//    }
-//
-//    func getPhotos() {
-//        let params: Parameters = [
-//            //"owner_id": ownerId,
-//            "extended": "1",
-//            "album_id": "profile"
-//        ]
-//        makeRequest(accessToken: accessToken, vkMethod: .getPhotos, parameters: params)
-//    }
-//
-//    func searchGroup(withTitle: String) {
-//        let params: Parameters = [
-//            "q": withTitle
-//        ]
-//        makeRequest(accessToken: accessToken, vkMethod: .searchGroup, parameters: params)
-//    }
-//
-//}
+}

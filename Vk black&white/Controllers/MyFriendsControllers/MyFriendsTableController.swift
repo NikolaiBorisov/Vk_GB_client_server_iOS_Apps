@@ -13,7 +13,7 @@ import Kingfisher
 class MyFriendsTableController: UITableViewController, UISearchBarDelegate {
     
     //Add search bar in main story board and coonect to this outlet if you gonna use the 2nd method for searching friends
-    @IBOutlet weak var searchBar: UISearchBar!
+    //@IBOutlet weak var searchBar: UISearchBar!
     
     //Set up a search bar without story board
     let searchController = UISearchController(searchResultsController: nil)
@@ -96,7 +96,7 @@ class MyFriendsTableController: UITableViewController, UISearchBarDelegate {
     //Запрашиваем у источника данных ячейку для вставки в определенное место тейбл вью
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         //Создаем переменную status и присваиваем случаный статус в сети или нет
-        let status = UserSatus.setRandomStatus()
+        //let status = UserSatus.setRandomStatus()
         //Создаем ячейку и делаем проверку через гард
         guard
             //Ячейка равна переиспользуемой ячейке с идентификатором в определенном месте по индексу
@@ -109,7 +109,9 @@ class MyFriendsTableController: UITableViewController, UISearchBarDelegate {
             cell.configure(with: users[indexPath.row])
             //cell.friendsPhoto.addGestureRecognizer(UITapGestureRecognizer(target: cell.friendsPhoto, action: #selector(cell.friendsPhoto.handleTap)))
             //Отображаем в ячейке рандомный статус друга
-            cell.friendsStatus.text = status.rawValue
+            //cell.onlineOfflineString.text = status.rawValue
+            
+            
         }
         return cell
     }
@@ -121,7 +123,8 @@ class MyFriendsTableController: UITableViewController, UISearchBarDelegate {
         //Присваиваем хедеру строковое значение из массива первых букв
         sectionHeader.textLabel?.text = String(self.firstLetters[section])
         //Устанавливаем фон хедера
-        sectionHeader.contentView.backgroundColor = .systemTeal
+        sectionHeader.contentView.backgroundColor = UIColor.systemTeal
+    
         return sectionHeader
     }
     //Set up headers 2nd method (both are usable)

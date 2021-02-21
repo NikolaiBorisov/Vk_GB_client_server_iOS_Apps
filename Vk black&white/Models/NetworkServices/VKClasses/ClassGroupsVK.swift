@@ -10,7 +10,7 @@ import Alamofire
 import SwiftyJSON
 import RealmSwift
 
-class Group: Object {
+class Group: Object, Codable {
     
     @objc dynamic var id: Int = 0
     @objc dynamic var name: String = ""
@@ -28,6 +28,14 @@ class Group: Object {
         self.id = id
         self.name = name
         self.photo100 = photo100
+    }
+}
+
+struct GroupsResponse: Decodable {
+    var response: Response
+    
+    struct Response: Decodable {
+        var items: [Group]
     }
 }
 

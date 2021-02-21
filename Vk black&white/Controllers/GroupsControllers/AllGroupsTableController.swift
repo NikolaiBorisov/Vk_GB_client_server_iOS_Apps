@@ -4,9 +4,11 @@
 //  Created by Macbook on 08.12.2020.
 
 import UIKit
+import AlamofireImage
 
 class AllGroupsTableController: UITableViewController {
     
+//My method
     var allGroups = [Group]()
 
     let allGroupsVK = Groups.makeGroups().sorted { $0.groupName < $1.groupName }
@@ -77,7 +79,7 @@ class AllGroupsTableController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 10.0))
-        view.backgroundColor = .lightGray
+        view.backgroundColor = .systemTeal
         let label = UILabel(frame: CGRect(x: 45, y: 5, width: tableView.frame.width - 10, height: 20.0))
         label.font = UIFont(name: "Helvetica Neue", size: 17.0)
         label.text = allGroupsSections[section].title
@@ -103,24 +105,121 @@ extension AllGroupsTableController: UISearchResultsUpdating {
     }
 }
 
+//2nd method
+
+//    var searchController: UISearchController!
+//    var searchText = ""
+//
+//    var imageService: ImageService?
+//    var networkService = NetworkManager()
+//    var isSearching = false
+//
+//    var allGroups = [Group]()
+//
 //    override func viewDidLoad() {
 //        super.viewDidLoad()
-//        tableView.rowHeight = 145
+//        imageService = ImageService(container: tableView)
+//        configureSearchController()
 //    }
 //
 //    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        return self.allGroups.count
+//        return allGroups.count
 //    }
 //
 //    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        guard
-//            let cell = tableView.dequeueReusableCell(withIdentifier: "NewGroupCell", for: indexPath) as? MyGroupsCell
-//        else { return UITableViewCell() }
-//        let group = self.allGroups[indexPath.row]
-//        cell.groupName.text = group.name
-//        //cell.groupImage.image = group.photo100
+//        let cell = tableView.dequeueReusableCell(withIdentifier: "NewGroupCell", for: indexPath) as! MyGroupsCell
+//        let community = allGroups[indexPath.row]
+//        cell.groupName.text = community.name
+//        cell.groupImage.image = imageService?.photo(atIndexpath: indexPath, byUrl: community.photo100)
 //
 //        return cell
 //    }
+//}
+//
+//extension AllGroupsTableController: UISearchResultsUpdating, UISearchBarDelegate {
+//    func updateSearchResults(for searchController: UISearchController) {
+//        guard let searchText = searchController.searchBar.text, !searchText.isEmpty else { return }
+//        if !isSearching {
+//            isSearching.toggle()
+//            networkService.getSearchCommunity(text: searchText, onComplete: { [weak self] (communities) in
+//                self?.allGroups = communities
+//                self?.tableView.reloadData()
+//                self?.isSearching.toggle()
+//            }) { (error) in
+//                self.isSearching.toggle()
+//                print(error)
+//            }
+//        }
+//    }
+//
+//    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+//        allGroups.removeAll()
+//        tableView.reloadData()
+//    }
+//
+//    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+//        allGroups.removeAll()
+//        tableView.reloadData()
+//    }
+//
+//    func configureSearchController() {
+//        searchController = UISearchController(searchResultsController: nil)
+//        searchController.searchResultsUpdater = self
+//        searchController.searchBar.placeholder = "Поиск"
+//        searchController.searchBar.delegate = self
+//        searchController.searchBar.sizeToFit()
+//        tableView.tableHeaderView = searchController.searchBar
+//    }
+//}
+
+//3rd method
+//    @IBOutlet weak var searchBar: UISearchBar!
+//
+//    var allGroups = [Group]()
+//
+//    override func viewDidLoad() {
+//        super.viewDidLoad()
+//        searchBar.delegate = self
+//
+//        NetworkManager.searchGroup(token: Session.shared.token, group: "VK") { [weak self] groups in
+//            self?.allGroups = groups
+//            DispatchQueue.main.async {
+//                self?.tableView.reloadData()
+//            }
+//        }
+//
+//    }
+//
+//    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+//        return allGroups.count
+//    }
+//
+//    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//        if let cell = tableView.dequeueReusableCell(withIdentifier: "NewGroupCell", for: indexPath) as? MyGroupsCell {
+//            let group = self.allGroups[indexPath.row]
+//            //cell.configure(with: group[indexPath.row])
+//            cell.groupName.text = group.name
+//            return cell
+//        }
+//        return UITableViewCell()
+//    }
 //
 //}
+//
+//extension AllGroupsTableController: UISearchBarDelegate {
+//    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+//        if !searchText.isEmpty {
+//            NetworkManager.searchGroup(token: Session.shared.token, group: searchText.lowercased()) { [weak self] groups in
+//                self?.allGroups = groups
+//            }
+//        } else {
+//            self.allGroups = [Group]()
+//        }
+//        tableView.reloadData()
+//    }
+//    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+//        tableView.reloadData()
+//    }
+//}
+//
+//

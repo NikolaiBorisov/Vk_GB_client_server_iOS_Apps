@@ -27,6 +27,7 @@ class Shadow: UIImageView {
         layer.shadowColor = UIColor.black.cgColor
         layer.shadowOpacity = 4.0
         layer.shadowRadius = 10
+        layer.shadowOffset = CGSize(width: -5, height: -5)
         
         layer.cornerRadius = bounds.height / 2
         
