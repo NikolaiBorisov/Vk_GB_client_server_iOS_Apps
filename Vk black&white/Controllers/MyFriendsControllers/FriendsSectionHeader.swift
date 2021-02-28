@@ -13,4 +13,13 @@ class FriendsSectionHeader: UITableViewHeaderFooterView {
         self.textLabel?.text = ""
         self.detailTextLabel?.text = ""
     }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        //corners rounding
+        layer.cornerRadius = frame.height / 2
+        layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
+        layer.masksToBounds = true
+    }
 }

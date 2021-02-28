@@ -344,29 +344,21 @@
             <objects>
                 <viewController id="rmg-l1-F05" customClass="ImagesGalleryViewController" customModule="Vk_black_white" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="clJ-Da-K5M">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eTW-jK-Opt" userLabel="Image View1">
-                                <rect key="frame" x="132" y="188" width="150" height="150"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            </imageView>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SBh-a5-Ya0" userLabel="Image View2">
-                                <rect key="frame" x="244" y="346" width="150" height="150"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            </imageView>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="IZv-6I-VJr" userLabel="Image View3">
-                                <rect key="frame" x="20" y="346" width="150" height="150"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            </imageView>
-                        </subviews>
                         <viewLayoutGuide key="safeArea" id="J20-Ro-h58"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
-                    <navigationItem key="navigationItem" id="4UB-ZM-Hbd"/>
-                    <connections>
-                        <segue destination="ggx-Db-H9d" kind="unwind" identifier="CloseTheImagesGallery" unwindAction="closePhotosView:" id="Kzq-iF-Qes"/>
-                    </connections>
+                    <toolbarItems/>
+                    <navigationItem key="navigationItem" id="4UB-ZM-Hbd">
+                        <barButtonItem key="leftBarButtonItem" title="Item" image="arrowshape.turn.up.left.fill" catalog="system" id="mVx-GB-UBp">
+                            <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <connections>
+                                <segue destination="ggx-Db-H9d" kind="unwind" unwindAction="closePhotosView:" id="A5v-fN-dF9"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7Hh-pd-0mw" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <exit id="ggx-Db-H9d" userLabel="Exit" sceneMemberID="exit"/>
@@ -389,7 +381,7 @@
                         </collectionViewFlowLayout>
                         <cells>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="friendPhotoCell" id="3eK-rJ-sKf" customClass="FriendsPhotoCell" customModule="Vk_black_white" customModuleProvider="target">
-                                <rect key="frame" x="3" y="0.0" width="379" height="560"/>
+                                <rect key="frame" x="18" y="0.0" width="379" height="560"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                 <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="RTt-7R-fJ7">
                                     <rect key="frame" x="0.0" y="0.0" width="379" height="560"/>
@@ -445,7 +437,7 @@
                                 <connections>
                                     <outlet property="likeControl" destination="Lex-ta-XPD" id="hVa-lC-nKM"/>
                                     <outlet property="pictures" destination="L1o-gS-VjJ" id="oLb-Lj-Gls"/>
-                                    <segue destination="rmg-l1-F05" kind="presentation" identifier="ShowPhoto" id="aaJ-6H-91e"/>
+                                    <segue destination="rmg-l1-F05" kind="show" identifier="SwipePhoto" id="aaJ-6H-91e"/>
                                 </connections>
                             </collectionViewCell>
                         </cells>
@@ -481,7 +473,7 @@
             </objects>
             <point key="canvasLocation" x="-1410" y="167"/>
         </scene>
-        <!--Friends-->
+        <!--My Friends Table Controller-->
         <scene sceneID="BCw-UJ-P5J">
             <objects>
                 <tableViewController storyboardIdentifier="AllFriendsController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Oag-Uo-0aM" customClass="MyFriendsTableController" customModule="Vk_black_white" customModuleProvider="target" sceneMemberID="viewController">
@@ -489,9 +481,20 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <segmentedControl key="tableHeaderView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" id="JOx-AT-NED">
+                            <rect key="frame" x="0.0" y="0.0" width="414" height="32"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <segments>
+                                <segment title="All Friends"/>
+                                <segment title="Friends Online"/>
+                            </segments>
+                            <connections>
+                                <action selector="onlineSegmentControl:" destination="Oag-Uo-0aM" eventType="valueChanged" id="kZY-tf-7w4"/>
+                            </connections>
+                        </segmentedControl>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="userCell" rowHeight="145" id="0yK-QO-j8n" customClass="MyFriendsCell" customModule="Vk_black_white" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="28" width="414" height="145"/>
+                                <rect key="frame" x="0.0" y="60" width="414" height="145"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="0yK-QO-j8n" id="RIt-OB-IWE">
                                     <rect key="frame" x="0.0" y="0.0" width="383" height="145"/>
@@ -504,13 +507,14 @@
                                                     <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 </imageView>
-                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="iphone.homebutton" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="3He-AF-iur" userLabel="Status View">
-                                                    <rect key="frame" x="75" y="75" width="20" height="20"/>
+                                                <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Cell" translatesAutoresizingMaskIntoConstraints="NO" id="3He-AF-iur" userLabel="Status View">
+                                                    <rect key="frame" x="65" y="65" width="35" height="35"/>
                                                     <color key="tintColor" systemColor="systemGreenColor"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="width" constant="20" id="g7b-QK-ctL"/>
-                                                        <constraint firstAttribute="height" constant="20" id="vzT-pF-nTb"/>
+                                                        <constraint firstAttribute="height" constant="35" id="U9n-yx-zjO"/>
+                                                        <constraint firstAttribute="width" constant="35" id="wTy-cU-Hn5"/>
                                                     </constraints>
+                                                    <preferredSymbolConfiguration key="preferredSymbolConfiguration" weight="heavy"/>
                                                 </imageView>
                                                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="E6K-WD-VNw">
                                                     <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
@@ -522,10 +526,10 @@
                                             </subviews>
                                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                             <constraints>
-                                                <constraint firstAttribute="trailing" secondItem="3He-AF-iur" secondAttribute="trailing" constant="5" id="FTe-pL-Y1T"/>
-                                                <constraint firstAttribute="bottom" secondItem="3He-AF-iur" secondAttribute="bottom" constant="5" id="pMl-ll-HbK"/>
+                                                <constraint firstAttribute="trailing" secondItem="3He-AF-iur" secondAttribute="trailing" id="5Vq-jn-Jaf"/>
                                                 <constraint firstAttribute="height" constant="100" id="pQp-ow-ARO"/>
                                                 <constraint firstAttribute="width" constant="100" id="rn4-86-UvR"/>
+                                                <constraint firstAttribute="bottom" secondItem="3He-AF-iur" secondAttribute="bottom" id="w4x-HK-UFV"/>
                                             </constraints>
                                         </view>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mUe-vr-HN7">
@@ -612,7 +616,8 @@
                             <outlet property="delegate" destination="Oag-Uo-0aM" id="9dX-sC-5zM"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Friends" id="uYb-Dq-lG1">
+                    <navigationItem key="navigationItem" id="uYb-Dq-lG1">
+                        <nil key="title"/>
                         <barButtonItem key="leftBarButtonItem" title="Back" image="arrowshape.turn.up.left.fill" catalog="system" id="BXP-ok-KnH">
                             <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         </barButtonItem>
@@ -727,7 +732,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="145"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="GlobalGroups" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4tA-ek-Sdw">
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="GlobalGroups" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4tA-ek-Sdw">
                                             <rect key="frame" x="20" y="22" width="266" height="100"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <nil key="textColor"/>
@@ -773,6 +778,9 @@
                                 </connections>
                             </tableViewCell>
                         </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="u7O-af-57M" id="Xcm-SB-E5S"/>
+                        </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Global Search For Groups" id="iiU-Fp-kcv"/>
                 </tableViewController>
@@ -1041,13 +1049,13 @@
         <segue reference="JBv-qd-0nr"/>
     </inferredMetricsTieBreakers>
     <resources>
+        <image name="Cell" width="165.5" height="320"/>
         <image name="VK_Black&amp;white_Compact_Logo" width="960" height="960"/>
         <image name="arrowshape.turn.up.left.fill" catalog="system" width="128" height="106"/>
         <image name="arrowshape.turn.up.right" catalog="system" width="128" height="106"/>
         <image name="bubble.right" catalog="system" width="128" height="110"/>
         <image name="eye" catalog="system" width="128" height="81"/>
         <image name="heart" catalog="system" width="128" height="109"/>
-        <image name="iphone.homebutton" catalog="system" width="108" height="128"/>
         <image name="message" catalog="system" width="128" height="113"/>
         <image name="newspaper" catalog="system" width="128" height="108"/>
         <image name="person.2.circle" catalog="system" width="128" height="121"/>

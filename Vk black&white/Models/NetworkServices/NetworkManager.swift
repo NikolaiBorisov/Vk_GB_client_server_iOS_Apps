@@ -34,6 +34,13 @@ class NetworkManager {
                     let friendsJSONList = json["response"]["items"].arrayValue
                     let friends = friendsJSONList.compactMap { User($0) }
                     completion(friends)
+                    
+                    do {
+                        try RealmManager.save(items: friends)
+                    } catch {
+                        print(error)
+                    }
+                    
                 case .failure(let error):
                     print(error)
                 }
@@ -64,6 +71,13 @@ class NetworkManager {
                     let photoJSONs = json["response"]["items"].arrayValue
                     let photos = photoJSONs.compactMap { Photo($0) }
                     completion(photos)
+                    
+                    do {
+                        try RealmManager.save(items: photos)
+                    } catch {
+                        print(error)
+                    }
+                    
                 case .failure(let error):
                     print(error)
                 }
@@ -91,15 +105,22 @@ class NetworkManager {
                     let groupJSONs = json["response"]["items"].arrayValue
                     let groups = groupJSONs.compactMap { Group($0) }
                     completion(groups)
+                    
+                    do {
+                        try RealmManager.save(items: groups)
+                    } catch {
+                        print(error)
+                    }
+                    
                 case .failure(let error):
                     print(error)
                 }
             }
     }
     
-    //MARK: - Group Search
+    //MARK: -Global Groups Search
     
-   static func searchGroup(token: String, group name: String, completion: @escaping ([Group]) -> Void) {
+    static func searchGroup(token: String, group name: String, completion: @escaping ([Group]) -> Void) {
         let path = "/method/groups.search"
         
         let params: Parameters = [
@@ -107,74 +128,20 @@ class NetworkManager {
             "q": name,
             "v": "5.130"
         ]
-        AF.request(NetworkManager.baseUrl + path, method: .get, parameters: params).responseData { response in
-            guard let data = response.value else { return }
-            
-            if let groups = try? JSONDecoder().decode(GroupsResponse.self, from: data).response.items {
-                completion(groups)
-                print(groups)
+        AF.request(NetworkManager.baseUrl + path,
+                   method: .get,
+                   parameters: params)
+            .responseData { response in
+                switch response.result {
+                case .success(let data):
+                    let json = JSON(data)
+                    let allJSONGroups = json["response"]["items"].arrayValue
+                    let allGroups = allJSONGroups.compactMap { Group($0) }
+                    completion(allGroups)
+                case .failure(let error):
+                    print(error)
+                }
             }
-        }
     }
-//    //Create url constructor
-//    var urlConstructor = URLComponents()
-//    let constants = NetworkConstants()
-//    let configuration: URLSessionConfiguration!
-//    let session: URLSession!
-//
-//    init() {
-//        urlConstructor.scheme = "https"
-//        urlConstructor.host = "api.vk.com"
-//        configuration = URLSessionConfiguration.default
-//        session = URLSession(configuration: configuration)
-//    }
-//
-//    func getAuthorizeRequest() -> URLRequest? {
-//        urlConstructor.host = "oauth.vk.com"
-//        urlConstructor.path = "/authorize"
-//
-//        urlConstructor.queryItems = [
-//            URLQueryItem(name: "client_id", value: constants.clientID),
-//            URLQueryItem(name: "scope", value: constants.scope),
-//            URLQueryItem(name: "display", value: "mobile"),
-//            URLQueryItem(name: "redirect_uri", value: "https://oauth.vk.com/blank.html"),
-//            URLQueryItem(name: "response_type", value: "token"),
-//            URLQueryItem(name: "v", value: constants.versionAPI)
-//        ]
-//
-//        guard
-//            let url = urlConstructor.url else { return nil }
-//        let request = URLRequest(url: url)
-//        return request
-//    }
-//    //Search group method
-//    func getSearchCommunity(text: String?, onComplete: @escaping ([Group]) -> Void, onError: @escaping (Error) -> Void) {
-//        urlConstructor.path = "/method/groups.search"
-//
-//        urlConstructor.queryItems = [
-//            URLQueryItem(name: "q", value: text),
-//            URLQueryItem(name: "access_token", value: Session.shared.token),
-//            URLQueryItem(name: "v", value: constants.versionAPI)
-//        ]
-//        let task = session.dataTask(with: urlConstructor.url!) { (data, response, error) in
-//
-//            if error != nil {
-//                onError(ServerErrors.errorTask)
-//            }
-//
-//            guard let data = data else {
-//                onError(ServerErrors.noDataProvided)
-//                return
-//            }
-//            guard let communities = try? JSONDecoder().decode(Response<Group>.self, from: data).response.items else {
-//                onError(ServerErrors.failedToDecode)
-//                return
-//            }
-//            DispatchQueue.main.async {
-//                onComplete(communities)
-//            }
-//        }
-//        task.resume()
-//    }
-
+    
 }

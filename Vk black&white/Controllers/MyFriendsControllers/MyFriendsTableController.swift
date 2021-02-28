@@ -9,10 +9,20 @@ import UIKit
 import AVFoundation
 import Alamofire
 import Kingfisher
+import RealmSwift
 
 class MyFriendsTableController: UITableViewController, UISearchBarDelegate {
+    //Просмотреть друзей онлайн
+    @IBAction func onlineSegmentControl(_ sender: UISegmentedControl) {
+        
+        switch sender.selectedSegmentIndex {
+        case 0: filteredFriends = self.convertToArray(results: friends)
+        case 1: filteredFriends = self.convertToArray(results: friends).filter { $0.statusOnline == 1 }
+        default: print("0")
+        }
+    }
     
-    //Add search bar in main story board and coonect to this outlet if you gonna use the 2nd method for searching friends
+    //Add search bar in main story board and coonect to this outlet, if you gonna use the 2nd method for searching friends
     //@IBOutlet weak var searchBar: UISearchBar!
     
     //Set up a search bar without story board
@@ -22,13 +32,16 @@ class MyFriendsTableController: UITableViewController, UISearchBarDelegate {
         return text.isEmpty
     }
     
-    //Создаем пустой массив друзей
-    var friends: [User] = [] {
+    //
+    private lazy var friends = try? Realm().objects(User.self) {
         //После загрузки друзей массив отсортированных друзей равен массиву друзей
         didSet {
-            self.filteredFriends = self.friends
+            self.filteredFriends = self.convertToArray(results: friends)
+            self.tableView.reloadData()
         }
     }
+    
+   
     //Создаем массив друзей отсортированных по первой букве в алфавитном порядке
     var filteredFriends = [User]() {
         didSet {
@@ -67,12 +80,12 @@ class MyFriendsTableController: UITableViewController, UISearchBarDelegate {
         tableView.register(FriendsSectionHeader.self, forHeaderFooterViewReuseIdentifier: "FriendsSectionHeader")
         
         //При загрузке вью отсортированный массив друзей равен массиву друзей
-        self.filteredFriends = self.friends
+        self.filteredFriends = self.convertToArray(results: friends)
         
         //Вызываем метод загрузки друзей из НетворкМенеджер
         let networkService = NetworkManager()
         networkService.loadFriends() { [weak self] friends in
-            self?.friends = friends
+            //self?.friends = self?.convertToArray(results: friends)
         }
     }
     
@@ -95,8 +108,6 @@ class MyFriendsTableController: UITableViewController, UISearchBarDelegate {
     }
     //Запрашиваем у источника данных ячейку для вставки в определенное место тейбл вью
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        //Создаем переменную status и присваиваем случаный статус в сети или нет
-        //let status = UserSatus.setRandomStatus()
         //Создаем ячейку и делаем проверку через гард
         guard
             //Ячейка равна переиспользуемой ячейке с идентификатором в определенном месте по индексу
@@ -107,11 +118,6 @@ class MyFriendsTableController: UITableViewController, UISearchBarDelegate {
         //Если константа users = словарю друзей, то созадем ячейку с именем друга, фото, статусом
         if let users = self.friendsDict[firstLetter] {
             cell.configure(with: users[indexPath.row])
-            //cell.friendsPhoto.addGestureRecognizer(UITapGestureRecognizer(target: cell.friendsPhoto, action: #selector(cell.friendsPhoto.handleTap)))
-            //Отображаем в ячейке рандомный статус друга
-            //cell.onlineOfflineString.text = status.rawValue
-            
-            
         }
         return cell
     }
@@ -122,9 +128,9 @@ class MyFriendsTableController: UITableViewController, UISearchBarDelegate {
             let sectionHeader = tableView.dequeueReusableHeaderFooterView(withIdentifier: "FriendsSectionHeader") as? FriendsSectionHeader else { return nil }
         //Присваиваем хедеру строковое значение из массива первых букв
         sectionHeader.textLabel?.text = String(self.firstLetters[section])
-        //Устанавливаем фон хедера
-        sectionHeader.contentView.backgroundColor = UIColor.systemTeal
-    
+        //Устанавливаем фон хедера и его прозрачность
+        sectionHeader.tintColor = UIColor.systemTeal.withAlphaComponent(0.3)
+        
         return sectionHeader
     }
     //Set up headers 2nd method (both are usable)
@@ -183,10 +189,17 @@ extension MyFriendsTableController: UISearchResultsUpdating {
     
     func filterFriends(with text: String) {
         if text.isEmpty {
-            self.filteredFriends = friends
+            self.filteredFriends = self.convertToArray(results: friends)
             return
         }
-        self.filteredFriends = self.friends.filter { $0.lastName.lowercased().contains(text.lowercased()) }
+        self.filteredFriends = self.convertToArray(results: friends).filter { ($0.firstName + $0.lastName).lowercased().contains(text.lowercased()) }
+    }
+}
+
+extension MyFriendsTableController {
+    private func convertToArray <T>(results: Results<T>?) -> [T] {
+        guard let results = results else { return [] }
+        return Array(results)
     }
 }
 //Search bar 2nd method for the story board search bar (search only by first name). Yiu need to add search bar in the story board manualy
@@ -203,187 +216,4 @@ extension MyFriendsTableController: UISearchResultsUpdating {
 //
 //        self.filteredFriends = self.friends.filter {$0.firstName.lowercased().contains(text.lowercased())}
 //    }
-//}
-
-
-
-
-//2nd method
-
-//    let vkService = NetworkManager()
-//    var users = [UserVK]() {
-//        didSet {
-//            self.sortedUsers = self.users
-//        }
-//    }
-//    var sortedUsers = [UserVK]()
-//    var usersInAlphabeticalOrder = [[UserVK]]()
-//    var firstLettersOfnames = [Character]()
-//
-//
-//    //Set up search bar
-//    var filteredUsers = [UserVK]()
-//    let searchController = UISearchController(searchResultsController: nil)
-//
-//    var searchBarIsEmpty: Bool {
-//        guard let text = searchController.searchBar.text else { return false }
-//        return text.isEmpty
-//    }
-//
-//    private var searchBarIsActive: Bool = false
-//    private var isFiltering: Bool {
-//        return !searchBarIsEmpty && searchBarIsActive
-//    }
-//
-//    override func viewDidLoad() {
-//        super.viewDidLoad()
-//
-//        //backgroundMusic.playSound()
-//
-//        //Get users from a server
-//        vkService.loadFriends { [weak self] users in
-//            self?.users = users
-//            self?.tableView.reloadData()
-//        }
-//
-//        //Sort users by last name
-//        self.sortedUsers = users.sorted{$0.lastName < $1.lastName}
-//
-//        //Get array of friends in alphabetical order
-//        for user in self.sortedUsers {
-//            if (self.firstLettersOfnames.contains(user.lastName.first!)) {
-//                self.usersInAlphabeticalOrder[self.usersInAlphabeticalOrder.count - 1].append(user)
-//            } else {
-//                self.firstLettersOfnames.append(user.lastName.first!)
-//                self.usersInAlphabeticalOrder.append([user])
-//            }
-//        }
-//        self.tableView.reloadData()
-//    }
-//
-//    override func numberOfSections(in tableView: UITableView) -> Int {
-//        if isFiltering {
-//            return 1
-//        } else {
-//            return usersInAlphabeticalOrder.count
-//        }
-//    }
-//
-//    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        if isFiltering {
-//            return filteredUsers.count
-//        } else{
-//            return usersInAlphabeticalOrder[section].count
-//        }
-//    }
-//
-//    // override func sectionIndexTitles(for tableView: UITableView) -> [String]? { friendsSections.map { $0.title } }
-//
-//    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//
-//        guard
-//            let cell = tableView.dequeueReusableCell(withIdentifier: "userCell", for: indexPath) as? FriendsCell
-//        else { return UITableViewCell() }
-//
-//        cell.friendsPhoto.alpha = 0
-//
-//        UIView.animate(withDuration: 1, animations: { cell.friendsPhoto.alpha = 1})
-//        UIView.animate(withDuration: 1, delay: 0.1, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.6, options: [], animations: {cell.frame.origin.x -= 100})
-//
-//        var user: UserVK
-//
-//        if isFiltering {
-//            user = filteredUsers[indexPath.row]
-//        } else {
-//            user = usersInAlphabeticalOrder[indexPath.section][indexPath.row]
-//        }
-//
-//        cell.selectionStyle = .none
-//
-//        //Set user's image to the cell
-//        if let imageUrl = URL(string: user.avatarURL) {
-//            DispatchQueue.global().async {
-//                let data = try? Data(contentsOf: imageUrl)
-//                if let data = data {
-//                    let image = UIImage(data: data)
-//                    DispatchQueue.main.async {
-//                        cell.friendsPhoto.image = image
-//                    }
-//                }
-//            }
-//        }
-//
-//        //Set user's name to the cell
-//        cell.friendsName.text = user.lastName + "" + user.firstName
-//
-//        return cell
-//    }
-//
-//    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-//        if isFiltering {
-//            return .none
-//        } else {
-//            return "\(self.firstLettersOfnames[section])"
-//        }
-//    }
-//
-//    //Хедеры
-//    //    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-//    //        let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 10.0))
-//    //        view.backgroundColor = .lightGray
-//    //        let label = UILabel(frame: CGRect(x: 45, y: 5, width: tableView.frame.width - 10, height: 20.0))
-//    //        label.font = UIFont(name: "Helvetica Neue", size: 17.0)
-//    //        label.text = friendsSections[section].title
-//    //        view.addSubview(label)
-//    //        return view
-//    //    }
-//
-//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        if segue.identifier == "showUserImage" { //check segue identifier
-//            if let indexPath = self.tableView.indexPathForSelectedRow { // get the index path to the controller's selected row
-//                let photoController = segue.destination as! ImagesGalleryViewController // get the link to the controller
-//
-//                var user: UserVK
-//
-//                if isFiltering { // if search bar is active
-//                    user = filteredUsers[indexPath.row]
-//                } else {
-//                    user = usersInAlphabeticalOrder[indexPath.section][indexPath.row]
-//                }
-//                photoController.ownerId = user.id
-//            }
-//        }
-//    }
-//}
-////    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-////        tableView.deselectRow(at: indexPath, animated: true)
-////    }
-////}
-//extension MyFriendsTableController: UISearchBarDelegate {
-//
-//    internal func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-//        searchBarIsActive = true;
-//    }
-//    internal func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-//        searchBarIsActive = true;
-//    }
-//    internal func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-//        searchBarIsActive = false;
-//    }
-//    internal func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-//        searchBarIsActive = false;
-//    }
-//
-//    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-//        filteredUsers = users.filter({(user:UserVK) in
-//            return user.lastName.lowercased().contains(searchText.lowercased())
-//        })
-//        if(filteredUsers.count == 0) {
-//            searchBarIsActive = false;
-//        } else {
-//            searchBarIsActive = true;
-//        }
-//        tableView.reloadData()
-//    }
-//
 //}

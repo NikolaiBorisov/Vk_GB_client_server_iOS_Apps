@@ -6,12 +6,12 @@
 import UIKit
 import Alamofire
 import AlamofireImage
+import RealmSwift
 
 
 class MyGroupsViewController: UITableViewController, UISearchBarDelegate {
     
     //@IBOutlet weak var searchBar: UISearchBar!
-    
     var searchController = UISearchController(searchResultsController: nil)
     var searchBarIsEmpty: Bool {
         guard
@@ -19,14 +19,15 @@ class MyGroupsViewController: UITableViewController, UISearchBarDelegate {
         return text.isEmpty
     }
     
-    var myGroups: [Group] = [] {
+    var myGroups = try? Realm().objects(Group.self) {
         didSet {
-            self.filteredGroups = self.myGroups
+            self.filteredGroups = self.convertToArray(results: self.myGroups)
+            self.tableView.reloadData()
         }
     }
+
     var filteredGroups = [Group]() {
         didSet {
-            
             self.myGroupsDict.removeAll()
             self.firstLetter.removeAll()
             self.fillGroupsDict()
@@ -43,14 +44,10 @@ class MyGroupsViewController: UITableViewController, UISearchBarDelegate {
             segue.identifier == "AddGroup", // проверка идентификатора перехода
             let controller = segue.source as? AllGroupsTableController, // контроллер, с которого переходим
             let indexPath = controller.tableView.indexPathForSelectedRow, // если indexPath = индекс выделенной ячейки
-            //Тут возникает ошибка, при попытке добавить новую группу из массива 
-            !self.myGroups.contains(where: {$0.name == controller.allGroups[indexPath.row].name})
+            !self.convertToArray(results: myGroups).contains(where: {$0.name == controller.allGroups[indexPath.row].name}) else { return }
         
-        else { return }
-        
-        //Не работает добавление групп из общего списка групп
         let group = controller.allGroups[indexPath.row]
-        self.myGroups.append(group)
+        //self.myGroups.append(group)
         self.filteredGroups.append(group)
         tableView.reloadData()
     }
@@ -75,14 +72,14 @@ class MyGroupsViewController: UITableViewController, UISearchBarDelegate {
         tableView.rowHeight = 145
         tableView.register(MyGroupsHeader.self, forHeaderFooterViewReuseIdentifier: "MyGroupsHeader")
         
-        self.filteredGroups = self.myGroups
+        self.filteredGroups = self.convertToArray(results: self.myGroups)
         
         let networkService = NetworkManager()
         networkService.loadGroups() { [weak self] groups in
-            self?.myGroups = groups
+            //self?.myGroups = groups
         }
     }
-    //
+    
     override func numberOfSections(in tableView: UITableView) -> Int {
         self.firstLetter.count
     }
@@ -110,10 +107,8 @@ class MyGroupsViewController: UITableViewController, UISearchBarDelegate {
     //Метод просит источник данных зафиксировать вставку или удаление указанной строки в получателе
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            let removed = self.filteredGroups.remove(at: indexPath.row)
-            if let index = self.myGroups.firstIndex(of: removed) {
-                self.myGroups.remove(at: index)
-            }
+            let firstLetter = self.firstLetter[indexPath.section]
+            self.myGroupsDict[firstLetter]?.remove(at: indexPath.row)
             self.tableView.deleteRows(at: [indexPath], with: .fade)
         }
     }
@@ -121,13 +116,15 @@ class MyGroupsViewController: UITableViewController, UISearchBarDelegate {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.tableView.deselectRow(at: indexPath, animated: true)
     }
-    //
+    
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard
             let sectionHeader = tableView.dequeueReusableHeaderFooterView(withIdentifier: "MyGroupsHeader") as? MyGroupsHeader else { return nil }
         sectionHeader.textLabel?.text = String(self.firstLetter[section])
-        sectionHeader.contentView.backgroundColor = .systemTeal
+        sectionHeader.tintColor = UIColor.systemTeal.withAlphaComponent(0.3)
+        
         return sectionHeader
+        
     }
     
     override func sectionIndexTitles(for tableView: UITableView) -> [String]? {
@@ -156,12 +153,18 @@ extension MyGroupsViewController: UISearchResultsUpdating {
     
     func filterGroups(with text: String) {
         if text.isEmpty {
-            self.filteredGroups = myGroups
+            self.filteredGroups = self.convertToArray(results: myGroups)
             return
         }
-        self.filteredGroups = self.myGroups.filter { $0.name.lowercased().contains(text.lowercased()) }
+        self.filteredGroups = self.convertToArray(results: myGroups).filter { $0.name.lowercased().contains(text.lowercased()) }
     }
 }
 
+extension MyGroupsViewController {
+    private func convertToArray <T>(results: Results<T>?) -> [T] {
+        guard let results = results else { return [] }
+        return Array(results)
+    }
+}
 
 

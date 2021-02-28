@@ -30,7 +30,7 @@ class VKLoginViewController: UIViewController {
         components.host = "oauth.vk.com"
         components.path = "/authorize"
         components.queryItems = [
-            URLQueryItem(name: "client_id", value: "7763155"),//insert client ID
+            URLQueryItem(name: "client_id", value: "7768760"),//insert client ID
             //Scope for friends, photos, groups
             URLQueryItem(name: "scope", value: netConstants.scope),
             URLQueryItem(name: "display", value: "mobile"),

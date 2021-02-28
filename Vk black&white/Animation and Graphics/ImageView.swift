@@ -1,8 +1,8 @@
 //
-//  Extensions.swift
+//  ImageView.swift
 //  Vk black&white
 //
-//  Created by NIKOLAI BORISOV on 19.02.2021.
+//  Created by NIKOLAI BORISOV on 25.02.2021.
 //
 
 import Foundation
@@ -16,6 +16,14 @@ extension UIImageView {
                         self?.image = image
                     }
                 }
+            }
+        }
+    }
+    
+    func getData(from url: URL, completion: @escaping (Data) -> ()) {
+        DispatchQueue.global().async {
+            if let data = try? Data(contentsOf: url) {
+                completion(data)
             }
         }
     }

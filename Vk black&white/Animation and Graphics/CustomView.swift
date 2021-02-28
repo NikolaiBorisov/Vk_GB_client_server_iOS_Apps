@@ -35,6 +35,18 @@ class Shadow: UIImageView {
     }
 }
 
+class ShadowForCellphoneStatus: UIImageView {
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        self.layer.shadowColor = UIColor.white.cgColor
+        self.layer.shadowOpacity = 50
+        self.layer.shadowRadius = 5
+        self.layer.cornerRadius = bounds.height / 2
+        self.clipsToBounds = false
+    }
+}
+
 class RoundingPictures: UIImageView {
     
     override func awakeFromNib() {
