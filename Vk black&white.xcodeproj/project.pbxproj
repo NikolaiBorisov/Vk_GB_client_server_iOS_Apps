@@ -26,6 +26,7 @@
 		FA40B9BC257FDF6300F7BE44 /* MyGroupsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA40B9BB257FDF6300F7BE44 /* MyGroupsViewController.swift */; };
 		FA40B9C5257FEE6000F7BE44 /* MyGroupsCell copy.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA40B9C4257FEE6000F7BE44 /* MyGroupsCell copy.swift */; };
 		FA40B9C9257FF7EF00F7BE44 /* AllGroupsTableController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA40B9C8257FF7EF00F7BE44 /* AllGroupsTableController.swift */; };
+		FA48EA5F25ED725300BC2ED1 /* AllGroupsHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA48EA5E25ED725300BC2ED1 /* AllGroupsHeader.swift */; };
 		FA4EF177258F890B00E3E3D0 /* RandomStatusControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4EF176258F890B00E3E3D0 /* RandomStatusControl.swift */; };
 		FA4F98C725DF9E7200EC5AFD /* ServerErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4F98C625DF9E7200EC5AFD /* ServerErrors.swift */; };
 		FA4F98CA25DF9F6800EC5AFD /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4F98C925DF9F6800EC5AFD /* Response.swift */; };
@@ -46,7 +47,6 @@
 		FA8887B92586D6C300236369 /* WomanInRed.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8887B82586D6C300236369 /* WomanInRed.swift */; };
 		FA8887C02586DC6600236369 /* MatrixViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8887BF2586DC6600236369 /* MatrixViewController.swift */; };
 		FA8887C32586DC8900236369 /* Matrix.gif in Resources */ = {isa = PBXBuildFile; fileRef = FA8887C22586DC8900236369 /* Matrix.gif */; };
-		FA8A26BC2582DAA400A6D2F4 /* Groups.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8A26BB2582DAA400A6D2F4 /* Groups.swift */; };
 		FA9037AF25D684E2001F76C1 /* ClassUserVK.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9037AE25D684E2001F76C1 /* ClassUserVK.swift */; };
 		FA9037B325D68D89001F76C1 /* ClassPhotoVK.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9037B225D68D89001F76C1 /* ClassPhotoVK.swift */; };
 		FA9037B625D690FD001F76C1 /* ClassGroupsVK.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9037B525D690FD001F76C1 /* ClassGroupsVK.swift */; };
@@ -94,6 +94,7 @@
 		FA40B9BB257FDF6300F7BE44 /* MyGroupsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyGroupsViewController.swift; sourceTree = "<group>"; };
 		FA40B9C4257FEE6000F7BE44 /* MyGroupsCell copy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MyGroupsCell copy.swift"; sourceTree = "<group>"; };
 		FA40B9C8257FF7EF00F7BE44 /* AllGroupsTableController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllGroupsTableController.swift; sourceTree = "<group>"; };
+		FA48EA5E25ED725300BC2ED1 /* AllGroupsHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllGroupsHeader.swift; sourceTree = "<group>"; };
 		FA4EF176258F890B00E3E3D0 /* RandomStatusControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomStatusControl.swift; sourceTree = "<group>"; };
 		FA4F98C625DF9E7200EC5AFD /* ServerErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerErrors.swift; sourceTree = "<group>"; };
 		FA4F98C925DF9F6800EC5AFD /* Response.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Response.swift; sourceTree = "<group>"; };
@@ -114,7 +115,6 @@
 		FA8887B82586D6C300236369 /* WomanInRed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WomanInRed.swift; sourceTree = "<group>"; };
 		FA8887BF2586DC6600236369 /* MatrixViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatrixViewController.swift; sourceTree = "<group>"; };
 		FA8887C22586DC8900236369 /* Matrix.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = Matrix.gif; sourceTree = "<group>"; };
-		FA8A26BB2582DAA400A6D2F4 /* Groups.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Groups.swift; sourceTree = "<group>"; };
 		FA9037AE25D684E2001F76C1 /* ClassUserVK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassUserVK.swift; sourceTree = "<group>"; };
 		FA9037B225D68D89001F76C1 /* ClassPhotoVK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassPhotoVK.swift; sourceTree = "<group>"; };
 		FA9037B525D690FD001F76C1 /* ClassGroupsVK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassGroupsVK.swift; sourceTree = "<group>"; };
@@ -229,7 +229,6 @@
 			isa = PBXGroup;
 			children = (
 				FA3C5A3F25D2A17C00C508BB /* NetworkServices */,
-				FA8A26BB2582DAA400A6D2F4 /* Groups.swift */,
 				FA617BF8258E9E74006E957E /* News.swift */,
 			);
 			path = Models;
@@ -246,7 +245,6 @@
 				FA4F98C625DF9E7200EC5AFD /* ServerErrors.swift */,
 				FA4F98C925DF9F6800EC5AFD /* Response.swift */,
 				FA4F98CC25DFA1D500EC5AFD /* ImageService.swift */,
-				FAC4768F25D9565600DA251C /* ImagesGalleryViewController.swift */,
 			);
 			path = NetworkServices;
 			sourceTree = "<group>";
@@ -259,6 +257,7 @@
 				FA40B9C4257FEE6000F7BE44 /* MyGroupsCell copy.swift */,
 				FACCFF8925DE40F400E78C25 /* MyGroupsHeader.swift */,
 				FA4F98CF25DFA4CD00EC5AFD /* AllGroupsCell.swift */,
+				FA48EA5E25ED725300BC2ED1 /* AllGroupsHeader.swift */,
 			);
 			path = GroupsControllers;
 			sourceTree = "<group>";
@@ -288,6 +287,7 @@
 				FA930537257FBE2E002E923A /* FriendsPhotosViewController.swift */,
 				FA93053A257FBE5D002E923A /* FriendsPhotoCell.swift */,
 				FA100E8125950E0C00838778 /* FriendsSinglePhotoVC.swift */,
+				FAC4768F25D9565600DA251C /* ImagesGalleryViewController.swift */,
 				FA3E670225963F0D00A52AB6 /* iCarousel.h */,
 				FA3E670125963F0D00A52AB6 /* iCarousel.m */,
 				FA3E670025963F0D00A52AB6 /* Vk black&white-Bridging-Header.h */,
@@ -518,7 +518,6 @@
 				FA4EF177258F890B00E3E3D0 /* RandomStatusControl.swift in Sources */,
 				FA4F98D425DFAAB600EC5AFD /* SearchBarControl.swift in Sources */,
 				FAA91FAA25D3C39A00ED1E66 /* VKLoginViewController.swift in Sources */,
-				FA8A26BC2582DAA400A6D2F4 /* Groups.swift in Sources */,
 				FA11CBDF257F98BC00A3E03D /* MyFriendsTableController.swift in Sources */,
 				FA8887B62586D4B300236369 /* Gif.swift in Sources */,
 				FA90DFCD25CD5A12001B40C6 /* SessionSingleton.swift in Sources */,
@@ -544,6 +543,7 @@
 				FA091D392578E2300052A983 /* SceneDelegate.swift in Sources */,
 				FA9037AF25D684E2001F76C1 /* ClassUserVK.swift in Sources */,
 				FAC4768B25D94A5400DA251C /* Player.swift in Sources */,
+				FA48EA5F25ED725300BC2ED1 /* AllGroupsHeader.swift in Sources */,
 				FA65E6FD259B471400D93760 /* InteractiveTransition.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

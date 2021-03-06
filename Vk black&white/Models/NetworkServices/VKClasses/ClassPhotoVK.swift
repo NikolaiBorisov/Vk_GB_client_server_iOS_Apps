@@ -12,7 +12,7 @@ import RealmSwift
 
 class Photo: Object, Codable {
     @objc dynamic var id: Int = 0
-    var sizes = List<PhotoSize>() //This property cannot be declared as a @objc dynamic
+    var sizes = List<PhotoSize>()
     
     convenience init(_ json: JSON) {
         self.init()

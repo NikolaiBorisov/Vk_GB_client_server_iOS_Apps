@@ -120,7 +120,7 @@ class NetworkManager {
     
     //MARK: -Global Groups Search
     
-    static func searchGroup(token: String, group name: String, completion: @escaping ([Group]) -> Void) {
+   static func searchGroup(token: String, group name: String, completion: @escaping ([Group]) -> Void) {
         let path = "/method/groups.search"
         
         let params: Parameters = [
