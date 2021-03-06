@@ -43,3 +43,14 @@ class Group: Object, Codable {
         "id"
     }
 }
+
+class GroupsSection: Object {
+    @objc dynamic var title: String = ""
+    var items: [Group] = []
+    
+    convenience init(title: String, items: [Group]) {
+        self.init()
+        self.title = title
+        self.items = items
+    }
+}

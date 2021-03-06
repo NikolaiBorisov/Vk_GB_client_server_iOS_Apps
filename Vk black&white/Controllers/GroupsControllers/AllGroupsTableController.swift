@@ -33,8 +33,9 @@ class AllGroupsTableController: UITableViewController {
         definesPresentationContext = true
         
         tableView.rowHeight = 145
+        tableView.register(AllGroupsHeader.self, forHeaderFooterViewReuseIdentifier: "AllGroupsHeader")
         
-        NetworkManager.searchGroup(token: Session.shared.token, group: "Москва") { [weak self] groups in
+        NetworkManager.searchGroup(token: Session.shared.token, group: " ") { [weak self] groups in
             self?.allGroups = groups
             DispatchQueue.main.async {
                 self?.tableView.reloadData()
@@ -58,6 +59,15 @@ class AllGroupsTableController: UITableViewController {
         let group = allGroups[indexPath.row]
         cell.configure(with: group)
         return cell
+    }
+    
+ override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard
+            let sectionHeader = tableView.dequeueReusableHeaderFooterView(withIdentifier: "AllGroupsHeader") as? MyGroupsHeader else { return nil }
+        sectionHeader.textLabel?.text = String(self.allGroups[section].name)
+        sectionHeader.tintColor = UIColor.systemTeal.withAlphaComponent(0.3)
+
+        return sectionHeader
     }
     
 }
@@ -93,6 +103,38 @@ extension AllGroupsTableController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
     }
 }
+    
+//extension AllGroupsTableController: UISearchBarDelegate {
+//    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+//        if !searchText.isEmpty {
+//            NetworkManager.searchGroup(token: Session.shared.token, group: searchText.lowercased()) { [weak self] groups in
+//                self?.allGroups = groups
+//            }
+//        } else {
+//            NetworkManager.searchGroup(token: Session.shared.token, group: "Москва") { [weak self] groups in
+//                self?.allGroups = groups
+//                DispatchQueue.main.async {
+//                    self?.tableView.reloadData()
+//                }
+//            }
+//        }
+//        tableView.reloadData()
+//    }
+//    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+//        NetworkManager.searchGroup(token: Session.shared.token, group: "Москва") { [weak self] groups in
+//            self?.allGroups = groups
+//            DispatchQueue.main.async {
+//                self?.tableView.reloadData()
+//            }
+//        }
+//        tableView.reloadData()
+//    }
+//}
+//
+//extension AllGroupsTableController: UISearchResultsUpdating {
+//    func updateSearchResults(for searchController: UISearchController) {
+//    }
+//}
 
 //My method
 //    var allGroups = [Group]()

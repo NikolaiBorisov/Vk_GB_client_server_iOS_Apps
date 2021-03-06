@@ -16,8 +16,8 @@ class MyFriendsTableController: UITableViewController, UISearchBarDelegate {
     @IBAction func onlineSegmentControl(_ sender: UISegmentedControl) {
         
         switch sender.selectedSegmentIndex {
-        case 0: filteredFriends = self.convertToArray(results: friends)
-        case 1: filteredFriends = self.convertToArray(results: friends).filter { $0.statusOnline == 1 }
+        case 0: filteredFriends = self.friends
+        case 1: filteredFriends = self.friends?.filter("firstName CONTAINS[cd] %@ OR lastName CONTAINS[cd] %@")
         default: print("0")
         }
     }
@@ -32,18 +32,16 @@ class MyFriendsTableController: UITableViewController, UISearchBarDelegate {
         return text.isEmpty
     }
     
-    //
-    private lazy var friends = try? Realm().objects(User.self) {
-        //После загрузки друзей массив отсортированных друзей равен массиву друзей
+    private var friends: Results<User>? {
         didSet {
-            self.filteredFriends = self.convertToArray(results: friends)
+            self.filteredFriends = friends
             self.tableView.reloadData()
         }
     }
     
-   
-    //Создаем массив друзей отсортированных по первой букве в алфавитном порядке
-    var filteredFriends = [User]() {
+    private var notificationToken: NotificationToken?
+    
+    var filteredFriends: Results<User>? {
         didSet {
             //После загрузки друзей обновляем словарь удаляя друзей
             self.friendsDict.removeAll()
@@ -80,19 +78,37 @@ class MyFriendsTableController: UITableViewController, UISearchBarDelegate {
         tableView.register(FriendsSectionHeader.self, forHeaderFooterViewReuseIdentifier: "FriendsSectionHeader")
         
         //При загрузке вью отсортированный массив друзей равен массиву друзей
-        self.filteredFriends = self.convertToArray(results: friends)
+        self.friends = try? RealmManager.getBy(type: User.self)
         
         //Вызываем метод загрузки друзей из НетворкМенеджер
         let networkService = NetworkManager()
         networkService.loadFriends() { [weak self] friends in
-            //self?.friends = self?.convertToArray(results: friends)
         }
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        //Animate friends appearance не работает
         animateTable()
-        //tableView.reloadData()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        self.notificationToken = self.friends?.observe { [weak self] change in
+            guard let self = self else { return }
+            switch change {
+            case .initial:
+                self.tableView.reloadData()
+            case let .update(_, deletions, insertions, modifications):
+                self.tableView.update(deletions: deletions, insertions: insertions, modifications: modifications)
+            case .error(let error):
+                self.show(error: error)
+            }
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        self.notificationToken?.invalidate()
     }
     
     //Количество секций в таблице равно кол-ву друзей отсортированных по 1й букве в алфавитном порядке
@@ -167,19 +183,20 @@ class MyFriendsTableController: UITableViewController, UISearchBarDelegate {
     
     //Метод заполнения словаря друзей
     private func fillFriendsDict() {
-        for user in self.filteredFriends {
-            let dictKey = user.firstName.first!
-            if var users = self.friendsDict[dictKey] {
-                users.append(user)
-                self.friendsDict[dictKey] = users
-            } else {
-                self.firstLetters.append(dictKey)
-                self.friendsDict[dictKey] = [user]
+        if let filteredFriends = self.filteredFriends {
+            for user in filteredFriends {
+                let dictKey = user.firstName.first!
+                if var users = self.friendsDict[dictKey] {
+                    users.append(user)
+                    self.friendsDict[dictKey] = users
+                } else {
+                    self.firstLetters.append(dictKey)
+                    self.friendsDict[dictKey] = [user]
+                }
             }
+            self.firstLetters.sort()
         }
-        self.firstLetters.sort()
     }
-    
 }
 //Search bar 1st method for the programmatic search bar  (search only by last name)
 extension MyFriendsTableController: UISearchResultsUpdating {
@@ -189,19 +206,13 @@ extension MyFriendsTableController: UISearchResultsUpdating {
     
     func filterFriends(with text: String) {
         if text.isEmpty {
-            self.filteredFriends = self.convertToArray(results: friends)
+            self.filteredFriends = self.friends
             return
         }
-        self.filteredFriends = self.convertToArray(results: friends).filter { ($0.firstName + $0.lastName).lowercased().contains(text.lowercased()) }
+        self.filteredFriends = self.friends?.filter("firstName CONTAINS[cd] %@ OR lastName CONTAINS[cd] %@", text, text)
     }
 }
 
-extension MyFriendsTableController {
-    private func convertToArray <T>(results: Results<T>?) -> [T] {
-        guard let results = results else { return [] }
-        return Array(results)
-    }
-}
 //Search bar 2nd method for the story board search bar (search only by first name). Yiu need to add search bar in the story board manualy
 //extension MyFriendsTableController: UISearchBarDelegate {
 //    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
