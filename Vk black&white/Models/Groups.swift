@@ -7,19 +7,24 @@
 
 import UIKit
 
-struct Groups {
+struct AllGroupsSection {
     var title: String
-    var photo: UIImage?
+    var items: [AllGroups]
 }
 
-final class GroupFactory {
-    static func makeGroup() -> [Groups] {
-        let gb =  Groups(title: "GeekBrains", photo: UIImage(named: "Geeks"))
-        let sb = Groups(title: "SkillBox", photo: UIImage(named: "Skbox"))
-        let net = Groups(title: "Netology", photo: UIImage(named: "Net"))
-        let mail =  Groups(title: "Mail.ru", photo: UIImage(named: "Mail"))
-        let yan = Groups(title: "Yandex.ru", photo: UIImage(named: "Yandex.ru"))
-        let go = Groups(title: "Google.com", photo: UIImage(named: "Google"))
+struct AllGroups {
+    var groupName: String
+    var groupImage: UIImage?
+}
+
+final class Groups {
+    static func makeGroups() -> [AllGroups] {
+        let gb =  AllGroups(groupName: "GeekBrains", groupImage: UIImage(named: "Geeks"))
+        let sb = AllGroups(groupName: "SkillBox", groupImage: UIImage(named: "Skbox"))
+        let net = AllGroups(groupName: "Netology", groupImage: UIImage(named: "Net"))
+        let mail =  AllGroups(groupName: "Mail.ru", groupImage: UIImage(named: "Mail"))
+        let yan = AllGroups(groupName: "Yandex.ru", groupImage: UIImage(named: "Yandex.ru"))
+        let go = AllGroups(groupName: "Google.com", groupImage: UIImage(named: "Google"))
         
         return [gb, sb, net, mail, yan, go]
     }

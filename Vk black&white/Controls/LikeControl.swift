@@ -2,63 +2,53 @@
 //  LikeControl.swift
 //  Vk black&white
 //
-//  Created by Macbook on 22.12.2020.
+//  Created by NIKOLAI BORISOV on 15.02.2021.
 //
 
 import UIKit
 
 class LikeControl: UIControl {
-    var imageView = UIImageView()
-    var likeCounterLabel = UILabel()
     
-    var likeCounter = 0
+    @IBOutlet weak var likeButton: UIButton! {
+        didSet {
+            self.likeButton.addTarget(self, action: #selector(likeButtonHandler(_:)), for: .touchUpInside)
+        }
+    }
+    
+    var likesCount: Int = 0 {
+        didSet {
+            self.likeButton.setTitle("\(self.likesCount)", for: .normal)
+            UIView.transition(with: self.likeButton,
+                              duration: 0.2,
+                              options: [.transitionFlipFromBottom]) {
+                self.likeButton.setTitle("\(self.likesCount)", for: .normal)
+            }
+            let likeImage = self.isLiked ? UIImage(systemName: "heart.fill") : UIImage(systemName: "heart")
+            let textColor = self.isLiked ? UIColor.red : UIColor.systemTeal
+            self.likeButton.setImage(likeImage, for: .normal)
+            self.likeButton.setTitleColor(textColor, for: .normal)
+        }
+    }
     var isLiked: Bool = false
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.setView()
+        self.setupView()
     }
-    
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        self.setView()
+        self.setupView()
+    }
+    func setupView() {
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        imageView.frame = bounds
     }
     
-    func setLike(count: Int) {
-        likeCounter = count
-        setLikeCounterLable()
+    @objc private func likeButtonHandler(_ sender: UIButton) {
+        self.isLiked.toggle()
+        isLiked ? self.likesCount += 1 : self.likesCount > 0 ? self.likesCount -= 1 : nil
     }
-    
-    func setView() {
-        self.addSubview(imageView)
-        self.addTarget(self, action: #selector(tapControl), for: .touchUpInside)
-        
-        imageView.tintColor = .systemRed
-        imageView.image = UIImage(systemName: "heart")
-        setLikeCounterLable()
-    }
-    
-    func setLikeCounterLable() {
-        addSubview(likeCounterLabel)
-        UIView.transition(with: likeCounterLabel, duration: 0.3, options: .transitionFlipFromTop, animations: {self.likeCounterLabel.text = String(self.likeCounter)
-        })
-        likeCounterLabel.textColor = .systemRed
-        likeCounterLabel.translatesAutoresizingMaskIntoConstraints = false
-        likeCounterLabel.trailingAnchor.constraint(equalTo: imageView.leadingAnchor, constant: -8).isActive = true
-        likeCounterLabel.centerYAnchor.constraint(equalTo: imageView.centerYAnchor).isActive = true
-    }
-    
-    @objc func tapControl() {
-        isLiked.toggle()
-        if isLiked {
-            imageView.image  = UIImage(systemName: "heart.fill")
-            likeCounter += 1
-            setLikeCounterLable()
-        }
-    }
+  
 }
