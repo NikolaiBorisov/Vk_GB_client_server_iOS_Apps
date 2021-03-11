@@ -11,6 +11,11 @@ target 'Vk black&white' do
  pod 'Kingfisher', '~> 6.0'
  pod 'RealmSwift'
  
+ pod 'Firebase/Core'
+ pod 'Firebase/Database'
+ pod 'Firebase/Auth'
+ pod 'Firebase/Firestore'
+ 
 
   # Pods for Vk black&white
 

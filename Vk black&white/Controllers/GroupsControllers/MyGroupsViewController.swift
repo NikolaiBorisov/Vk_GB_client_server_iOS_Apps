@@ -9,189 +9,107 @@ import AlamofireImage
 import RealmSwift
 
 
-class MyGroupsViewController: UITableViewController, UISearchBarDelegate {
+class MyGroupsViewController: UITableViewController {
     
-    //@IBOutlet weak var searchBar: UISearchBar!
-    var searchController = UISearchController(searchResultsController: nil)
+    private let networkManager = NetworkManager()
+    private let realmManager = RealmManager.shared
+    private var myGroups: Results<Group>? {
+        let myGroups: Results<Group>? = realmManager?.getObjects()
+        return myGroups?.sorted(byKeyPath: "id", ascending: true)
+    }
+    var filteredMyGroups = [Group]()
     var searchBarIsEmpty: Bool {
-        guard
-            let text = searchController.searchBar.text else { return false }
+        guard let text = searchController.searchBar.text else { return false }
         return text.isEmpty
     }
-    
-    var myGroups: Results<Group>? {
-        didSet {
-            self.filteredGroups = self.myGroups
-            self.tableView.reloadData()
-        }
+    var filtering: Bool {
+        return searchController.isActive && !searchBarIsEmpty
     }
-    
-    var notificationToken: NotificationToken?
-    
-    var filteredGroups: Results<Group>? {
-        didSet {
-            self.myGroupsDict.removeAll()
-            self.firstLetter.removeAll()
-            self.fillGroupsDict()
-            tableView.reloadData()
-        }
-    }
-    
-    var myGroupsDict: [Character : [Group]] = [:]
-    
-    var firstLetter = [Character]()
-    
-    @IBAction func addGroup(segue: UIStoryboardSegue) {
-        guard
-            segue.identifier == "AddGroup", // проверка идентификатора перехода
-            let controller = segue.source as? AllGroupsTableController, // контроллер, с которого переходим
-            let indexPath = controller.tableView.indexPathForSelectedRow, // если indexPath = индекс выделенной ячейки
-            let myGroups = self.myGroups,
-            !myGroups.contains(where: {$0.name == controller.allGroups[indexPath.row].name}) else { return }
-        
-        let group = controller.allGroups[indexPath.row]
-        //self.myGroups.append(group)
-        var newGroups = Array(myGroups)
-        newGroups.append(group)
-        try? RealmManager.save(items: newGroups)
-        tableView.reloadData()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        animateTable()
-    }
+    let searchController = UISearchController(searchResultsController: nil)
+    var myGroupsSections = [GroupsSection]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        animateTable()
-        
+        networkManager.loadGroups() { [weak self] (myGroups) in
+            let myGroupsDictionary = Dictionary.init(grouping: myGroups) {
+                $0.name.prefix(1)
+            }
+            self?.myGroupsSections = myGroupsDictionary.map { GroupsSection(title: String($0.key), items: $0.value) }
+            self?.myGroupsSections.sort { $0.title < $1.title }
+            DispatchQueue.main.async {
+                try? self?.realmManager?.add(objects: myGroups)
+                self?.tableView.reloadData()
+            }
+        }
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = "Search"
         searchController.searchBar.setValue("Cancel", forKey: "cancelButtonText")
         navigationItem.searchController = searchController
-        searchController.searchBar.delegate = self
         definesPresentationContext = true
-        
-        tableView.rowHeight = 145
-        tableView.register(MyGroupsHeader.self, forHeaderFooterViewReuseIdentifier: "MyGroupsHeader")
-        
-        self.myGroups = try? RealmManager.getBy(type: Group.self)
-        
-        let networkService = NetworkManager()
-        networkService.loadGroups() { [weak self] groups in }
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        self.notificationToken = self.myGroups?.observe { [weak self] change in
-            guard let self = self else { return }
-            switch change {
-            case .initial:
-                self.tableView.reloadData()
-            case let .update(_, deletions, insertions, modifications):
-                self.tableView.update(deletions: deletions, insertions: insertions, modifications: modifications)
-            case .error(let error):
-                self.show(error: error)
-            }
-        }
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        self.notificationToken?.invalidate()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        animateTable()
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        self.firstLetter.count
+        if filtering {
+            return 1
+        } else {
+            return myGroupsSections.count
+        }
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let groupFirstLetter = self.firstLetter[section]
-        return self.myGroupsDict[groupFirstLetter]?.count ?? 0
-        
+        if filtering {
+            return filteredMyGroups.count
+        }
+        return myGroupsSections[section].items.count
     }
+    
+    override func sectionIndexTitles(for tableView: UITableView) -> [String]? { myGroupsSections.map { $0.title } }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard
             let cell = tableView.dequeueReusableCell(withIdentifier: "GroupCell", for: indexPath) as? MyGroupsCell
         else { return UITableViewCell() }
-        
-        let firstLetter = self.firstLetter[indexPath.section]
-        
-        if let groups = self.myGroupsDict[firstLetter] {
-            cell.configure(with: groups[indexPath.row])
+        var groups: Group
+        if filtering {
+            groups = filteredMyGroups[indexPath.row]
+        } else {
+            groups = myGroupsSections[indexPath.section].items[indexPath.row]
         }
-        
+        cell.configure(with: groups)
         return cell
     }
     
-    //Метод просит источник данных зафиксировать вставку или удаление указанной строки в получателе
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            guard let group = self.filteredGroups?[indexPath.row],
-                  let objectToDelete = self.myGroups?.filter("NOT id !=%@", group.id)
-            else { return }
-            try? Realm().write { try? Realm().delete(objectToDelete)}
-            
-            let firstLetter = self.firstLetter[indexPath.section]
-            self.myGroupsDict[firstLetter]?.remove(at: indexPath.row)
-            self.tableView.deleteRows(at: [indexPath], with: .fade)
-        }
-    }
-    //Метод сообщает делегату, что  выбрана строка
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        self.tableView.deselectRow(at: indexPath, animated: true)
-    }
-    
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard
-            let sectionHeader = tableView.dequeueReusableHeaderFooterView(withIdentifier: "MyGroupsHeader") as? MyGroupsHeader else { return nil }
-        sectionHeader.textLabel?.text = String(self.firstLetter[section])
-        sectionHeader.tintColor = UIColor.systemTeal.withAlphaComponent(0.3)
-        
-        return sectionHeader
-        
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 10.0))
+        view.backgroundColor = UIColor.systemTeal.withAlphaComponent(0.3)
+        let label = UILabel(frame: CGRect(x: 42, y: 5, width: tableView.frame.width - 10, height: 20.0))
+        label.font = UIFont(name: "Avenir Next Medium", size: 20.0)
+        label.text = myGroupsSections[section].title
+        view.addSubview(label)
+        return view
     }
     
-    override func sectionIndexTitles(for tableView: UITableView) -> [String]? {
-        self.firstLetter.map{String($0)}
-    }
-    
-    private func fillGroupsDict() {
-        if let filteredGroups = self.filteredGroups {
-            for group in filteredGroups {
-                let dictKey = group.name.first!
-                if var groups = self.myGroupsDict[dictKey] {
-                    groups.append(group)
-                    self.myGroupsDict[dictKey] = groups
-                } else {
-                    self.firstLetter.append(dictKey)
-                    self.myGroupsDict[dictKey] = [group]
-                }
-            }
-            self.firstLetter.sort()
-        }
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
 
 extension MyGroupsViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
-        filterGroups(with: searchController.searchBar.text!)
+        filterContentForSearchText(searchController.searchBar.text!)
     }
     
-    func filterGroups(with text: String) {
-        if text.isEmpty {
-            self.filteredGroups = self.myGroups
-            self.tableView.reloadData()
-            return
-        }
-        self.filteredGroups = self.myGroups?.filter("name CONTAINS[cd] %@", text)
-        self.tableView.reloadData()
+    func filterContentForSearchText(_ searchText: String) {
+        filteredMyGroups = myGroups!.filter({ (allGroups: Group) -> Bool in
+            return allGroups.name.lowercased().contains(searchText.lowercased())
+        })
+        tableView.reloadData()
     }
 }
-
 

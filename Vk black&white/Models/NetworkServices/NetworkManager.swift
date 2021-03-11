@@ -35,12 +35,12 @@ class NetworkManager {
                     let friends = friendsJSONList.compactMap { User($0) }
                     completion(friends)
                     
-                    do {
-                        try RealmManager.save(items: friends)
-                    } catch {
-                        print(error)
-                    }
-                    
+                //                    do {
+                //                        try RealmManager.save(items: friends)
+                //                    } catch {
+                //                        print(error)
+                //                    }
+                
                 case .failure(let error):
                     print(error)
                 }
@@ -72,12 +72,12 @@ class NetworkManager {
                     let photos = photoJSONs.compactMap { Photo($0) }
                     completion(photos)
                     
-                    do {
-                        try RealmManager.save(items: photos)
-                    } catch {
-                        print(error)
-                    }
-                    
+                //                    do {
+                //                        try RealmManager.save(items: photos)
+                //                    } catch {
+                //                        print(error)
+                //                    }
+                
                 case .failure(let error):
                     print(error)
                 }
@@ -106,12 +106,12 @@ class NetworkManager {
                     let groups = groupJSONs.compactMap { Group($0) }
                     completion(groups)
                     
-                    do {
-                        try RealmManager.save(items: groups)
-                    } catch {
-                        print(error)
-                    }
-                    
+                //                    do {
+                //                        try RealmManager.save(items: groups)
+                //                    } catch {
+                //                        print(error)
+                //                    }
+                
                 case .failure(let error):
                     print(error)
                 }
@@ -120,13 +120,13 @@ class NetworkManager {
     
     //MARK: -Global Groups Search
     
-   static func searchGroup(token: String, group name: String, completion: @escaping ([Group]) -> Void) {
+    func searchGroup(token: String, group name: String, completion: @escaping ([Group]) -> Void) {
         let path = "/method/groups.search"
         
         let params: Parameters = [
             "access_token": token,
             "q": name,
-            "v": "5.130"
+            "v": NetworkManager.version
         ]
         AF.request(NetworkManager.baseUrl + path,
                    method: .get,

@@ -24,7 +24,7 @@ class AllGroupsCell: UITableViewCell {
                        initialSpringVelocity: 1,
                        options: [.autoreverse],
                        animations: {
-                        let scale = CGAffineTransform(scaleX: 0.8, y: 0.8)
+                        //let scale = CGAffineTransform(scaleX: 0.8, y: 0.8)
                         //self.imageCommunityView.transform = scale
                         //self.shadowView.transform = scale
                         

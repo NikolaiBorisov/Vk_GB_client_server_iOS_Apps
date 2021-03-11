@@ -10,12 +10,23 @@ import Alamofire
 import SwiftyJSON
 import RealmSwift
 
+class FriendsSections: Object {
+    @objc dynamic var title: String = ""
+    var items: [User] = []
+    
+    convenience init(title: String, items: [User]) {
+        self.init()
+        self.title = title
+        self.items = items
+    }
+}
+
 class User: Object {
     @objc dynamic var id: Int = 0
     @objc dynamic var firstName: String = ""
     @objc dynamic var lastName: String = ""
     @objc dynamic var photo100: String = ""
-    var city: City?
+    @objc dynamic var city: City?
     
     @objc dynamic var status: String = ""
     @objc dynamic var statusOnline: Int = Int()

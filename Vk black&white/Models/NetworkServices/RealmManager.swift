@@ -10,42 +10,40 @@ import RealmSwift
 
 class RealmManager {
     
-    static let deleteIfMigration = Realm.Configuration(deleteRealmIfMigrationNeeded: true)
+    static let shared = RealmManager()
+    private let realm: Realm
+    private init?() {
+        let configurator = Realm.Configuration(schemaVersion: 1, deleteRealmIfMigrationNeeded: true)
+        guard let realm = try? Realm(configuration: configurator) else { return nil }
+        self.realm = realm
+        print(realm.configuration.fileURL ?? "")
+    }
     
-    //define all the functions which are responsible for the data storage in the DB
-    static func save<T: Object>(items: [T],
-                                configuration: Realm.Configuration = deleteIfMigration,
-                                update: Realm.UpdatePolicy = .modified) throws {
-        let realm = try Realm(configuration: configuration)
-        print(configuration.fileURL ?? "")
+    func add<T: Object>(object: T) throws {
         try realm.write {
-            realm.add(items, update: update)
+            realm.add(object)
         }
     }
     
-    static func getBy <T: Object>(type: T.Type) throws -> Results<T> {
-        try Realm().objects(T.self)
+    func add<T: Object>(objects: [T]) throws {
+        try realm.write {
+            realm.add(objects, update: .all)
+        }
     }
-}
-
-extension UITableView {
-    func update(deletions: [Int],
-                insertions: [Int],
-                modifications: [Int],
-                sections: Int = 0) {
-        self.beginUpdates()
-        deleteRows(at: deletions.map { IndexPath(row: $0, section: sections)}, with: .automatic)
-        insertRows(at: insertions.map { IndexPath(row: $0, section: sections) }, with: .automatic)
-        reloadRows(at: modifications.map { IndexPath(row: $0, section: sections) }, with: .automatic)
-        self.endUpdates()
+    
+    func getObjects<T: Object>() -> Results<T> {
+        return realm.objects(T.self)
     }
-}
-
-extension UIViewController {
-    func show(error: Error) {
-        let alertVC = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-        let okButton = UIAlertAction(title: "OK", style: .default)
-        alertVC.addAction(okButton)
-        present(alertVC, animated: true)
+    
+    func delete<T: Object>(object: T) throws {
+        try realm.write {
+            realm.delete(object)
+        }
+    }
+    
+    func deleteAll() throws {
+        try realm.write {
+            realm.deleteAll()
+        }
     }
 }

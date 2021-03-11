@@ -10,221 +10,210 @@ import AVFoundation
 import Alamofire
 import Kingfisher
 import RealmSwift
+import FirebaseDatabase
 
-class MyFriendsTableController: UITableViewController, UISearchBarDelegate {
-    //Просмотреть друзей онлайн
-    @IBAction func onlineSegmentControl(_ sender: UISegmentedControl) {
-        
-        switch sender.selectedSegmentIndex {
-        case 0: filteredFriends = self.friends
-        case 1: filteredFriends = self.friends?.filter("firstName CONTAINS[cd] %@ OR lastName CONTAINS[cd] %@")
-        default: print("0")
-        }
-    }
+class MyFriendsTableController: UITableViewController {
     
-    //Add search bar in main story board and coonect to this outlet, if you gonna use the 2nd method for searching friends
-    //@IBOutlet weak var searchBar: UISearchBar!
+    @IBAction func closePhotosView(_ unwindSegue: UIStoryboardSegue) {}
     
-    //Set up a search bar without story board
-    let searchController = UISearchController(searchResultsController: nil)
+    //Просмотреть друзей онлайн не работает
+    //        @IBAction func onlineSegmentControl(_ sender: UISegmentedControl) {
+    //
+    //            switch sender.selectedSegmentIndex {
+    //            case 0: filteredFriends = allFriends
+    //            case 1: filteredFriends = allFriends?.filter { $0.statusOnline == 1 }
+    //            default: print("0")
+    //            }
+    //        }
+    
+    
+    var userRef = Database.database().reference(withPath: "users")
+    
+    private var allFriends = [FirebaseUser]()
+    
+//    private var allFriends: Results<User>? {
+//        didSet {
+//            //self.filteredFriends = allFriends
+//            self.tableView.reloadData()
+//        }
+//    }
+    
+//    var filteredFriends: Results<User>? {
+//        didSet {
+//            tableView.reloadData()
+//        }
+//    }
+    
+    //var token: NotificationToken?
+    
     var searchBarIsEmpty: Bool {
         guard let text = searchController.searchBar.text else { return false }
         return text.isEmpty
     }
-    
-    private var friends: Results<User>? {
-        didSet {
-            self.filteredFriends = friends
-            self.tableView.reloadData()
-        }
+    var filtering: Bool {
+        return searchController.isActive && !searchBarIsEmpty
+        
     }
     
-    private var notificationToken: NotificationToken?
+    let searchController = UISearchController(searchResultsController: nil)
+    var friendSections = [FriendsSections]()
+    private let networkManager = NetworkManager()
     
-    var filteredFriends: Results<User>? {
-        didSet {
-            //После загрузки друзей обновляем словарь удаляя друзей
-            self.friendsDict.removeAll()
-            //Удаляем массив первых букв
-            self.firstLetters.removeAll()
-            //Заполняем словарь друзей заново
-            self.fillFriendsDict()
-            //Обновляем данные в таблице
-            tableView.reloadData()
-        }
-    }
-    //Создаем словарь друзей, гле ключ - это первая буква, значение  - это имя и фамилия друга
-    var friendsDict: [Character: [User]] = [:]
-    //Создаем массив первых букв имен
-    var firstLetters = [Character]()
+    //private let realmManager = RealmManager.shared
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //Animation of friends appearance не работает
-        animateTable()
-        
-        //Search bar activation without story board
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = "Search"
         searchController.searchBar.setValue("Cancel", forKey: "cancelButtonText")
         navigationItem.searchController = searchController
-        searchController.searchBar.delegate = self
         definesPresentationContext = true
         
-        //Set up the row height according the height in SB
-        tableView.rowHeight = 145
-        //Set up the headers
-        tableView.register(FriendsSectionHeader.self, forHeaderFooterViewReuseIdentifier: "FriendsSectionHeader")
+        //pairTableAndRealm()
         
-        //При загрузке вью отсортированный массив друзей равен массиву друзей
-        self.friends = try? RealmManager.getBy(type: User.self)
-        
-        //Вызываем метод загрузки друзей из НетворкМенеджер
-        let networkService = NetworkManager()
-        networkService.loadFriends() { [weak self] friends in
+        self.networkManager.loadFriends() { [weak self] (allFriends) in
+            //self?.pairTableAndRealm()
         }
     }
+    
+//    func pairTableAndRealm() {
+//        guard let realm = try? Realm() else { return }
+//        allFriends = realm.objects(User.self)
+//        self.token = allFriends?.observe { [weak self] (changes: RealmCollectionChange) in
+//            guard let tableView = self!.tableView else { return }
+//            switch changes {
+//            case .initial:
+//                tableView.reloadData()
+//            case .update(_, _, _, _):
+//
+//                self?.networkManager.loadFriends() { [weak self] (allFriends) in
+//                    let friendsDictionary = Dictionary.init(grouping: allFriends) {
+//                        $0.lastName.prefix(1)
+//                    }
+//                    self?.friendSections = friendsDictionary.map { FriendsSections(title: String($0.key), items: $0.value) }
+//                    self?.friendSections.sort { $0.title < $1.title }
+//
+//                    tableView.reloadData()
+//
+//                    DispatchQueue.main.async {
+//                        try? self?.realmManager?.add(objects: allFriends)
+//                        self?.tableView.reloadData()
+//                    }
+//                }
+//                tableView.beginUpdates()
+//                tableView.insertRows(at: insertions.map({ IndexPath(row: $0, section: 0) }),
+//                                     with: .automatic)
+//                tableView.deleteRows(at: deletions.map({ IndexPath(row: $0, section: 0)}),
+//                                     with: .automatic)
+//                tableView.reloadRows(at: modifications.map({ IndexPath(row: $0, section: 0) }),
+//                                     with: .automatic)
+//                tableView.endUpdates()
+//            case .error(let error):
+//                fatalError("\(error)")
+//            }
+//        }
+//}
     
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         animateTable()
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
         
-        self.notificationToken = self.friends?.observe { [weak self] change in
-            guard let self = self else { return }
-            switch change {
-            case .initial:
-                self.tableView.reloadData()
-            case let .update(_, deletions, insertions, modifications):
-                self.tableView.update(deletions: deletions, insertions: insertions, modifications: modifications)
-            case .error(let error):
-                self.show(error: error)
-            }
-        }
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        self.notificationToken?.invalidate()
-    }
+//    private func loadData(completion: (() -> Void)? = nil) {
+//        networkManager.loadFriends { [weak self] (result) in
+//            switch result {
+//            case .success(let users):
+//                DispatchQueue.main.async {
+//                    completion?()
+//                }
+//            case .failure(let error):
+//                completion?()
+//                print(error.localizedDescription)
+//            }
+//        }
+//    }
     
-    //Количество секций в таблице равно кол-ву друзей отсортированных по 1й букве в алфавитном порядке
     override func numberOfSections(in tableView: UITableView) -> Int {
-        self.firstLetters.count
-    }
-    //Кол-во строк в секции равно кол-ву друзей отсортированных по первой букве в алф порядке
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        //Присваиваем переменной массив секций друзей по 1й букве
-        let nameFirstLetter = self.firstLetters[section]
-        //Возвращаем словарь друзей типа ключ - первая буква, значение - имя друга, присваиваем нулевое значение по дефолту с помощью нил коалейсинг оператор на случай если значение = nil
-        return self.friendsDict[nameFirstLetter]?.count ?? 0
-    }
-    //Запрашиваем у источника данных ячейку для вставки в определенное место тейбл вью
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        //Создаем ячейку и делаем проверку через гард
-        guard
-            //Ячейка равна переиспользуемой ячейке с идентификатором в определенном месте по индексу
-            let cell = tableView.dequeueReusableCell(withIdentifier: "userCell", for: indexPath) as? MyFriendsCell //Делаем приведение типа нашей ячейки к типу ячейки во FriendsCellVC
-        else { return UITableViewCell() } //Если ячейка не обнаружена, то возвращаем системную пустую ячейку
-        //Присваиваем константе массив первых букв по опредленному месту в секции
-        let firstLetter = self.firstLetters[indexPath.section]
-        //Если константа users = словарю друзей, то созадем ячейку с именем друга, фото, статусом
-        if let users = self.friendsDict[firstLetter] {
-            cell.configure(with: users[indexPath.row])
+        if filtering {
+            return 1
+        } else {
+            return friendSections.count
         }
+    }
+    
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if filtering {
+            return allFriends.count
+        }
+        return friendSections[section].items.count
+    }
+    
+    override func sectionIndexTitles(for tableView: UITableView) -> [String]? { friendSections.map { $0.title } }
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard
+            let cell = tableView.dequeueReusableCell(withIdentifier: "userCell", for: indexPath) as? MyFriendsCell
+        else { return UITableViewCell() }
+        var friends: User
+        if filtering {
+            //какое тут значение по умолчанию?
+            friends = allFriends[indexPath.row]
+        } else {
+            friends = friendSections[indexPath.section].items[indexPath.row]
+        }
+        cell.configure(with: friends)
         return cell
     }
     
-    //Set up headers 1st method (use "class FriendsSectionHeader: UITableViewHeaderFooterView" for set up)
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard
-            let sectionHeader = tableView.dequeueReusableHeaderFooterView(withIdentifier: "FriendsSectionHeader") as? FriendsSectionHeader else { return nil }
-        //Присваиваем хедеру строковое значение из массива первых букв
-        sectionHeader.textLabel?.text = String(self.firstLetters[section])
-        //Устанавливаем фон хедера и его прозрачность
-        sectionHeader.tintColor = UIColor.systemTeal.withAlphaComponent(0.3)
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 10.0))
+        //make the header transparent
+        view.backgroundColor = UIColor.systemTeal.withAlphaComponent(0.3)
+        let label = UILabel(frame: CGRect(x: 42, y: 5, width: tableView.frame.width - 10, height: 20.0))
+        label.font = UIFont(name: "Avenir Next Medium", size: 20.0)
+        label.text = friendSections[section].title
+        view.addSubview(label)
+        //rounding the header
+        view.layer.cornerRadius = 10
+        view.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
+        view.layer.masksToBounds = true
         
-        return sectionHeader
-    }
-    //Set up headers 2nd method (both are usable)
-    //    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-    //        let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 10.0))
-    //        view.backgroundColor = .lightGray
-    //        let label = UILabel(frame: CGRect(x: 45, y: 5, width: tableView.frame.width - 10, height: 20.0))
-    //        label.font = UIFont(name: "Helvetica Neue", size: 17.0)
-    //        label.text = String(self.firstLetters[section])
-    //        view.addSubview(label)
-    //        return view
-    //    }
-    
-    //Метод для установки боковой буквенной панели поиска
-    override func sectionIndexTitles(for tableView: UITableView) -> [String]? {
-        self.firstLetters.map{String($0)} //Используем значения преобразованного массива первых букв имен, где функция map возвращает коллекцию из первых букв
+        return view
     }
     
-    //Метод перехода к коллекции фото друзей
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        guard
-            segue.identifier == "showUserImage", //Присваиваем segue идентификатор
-            let controller = segue.destination as? FriendsPhotosViewController, //Кастим наш текущий контроллер к типу контроллера назначения
-            let indexPath = tableView.indexPathForSelectedRow //Осуществляем переход по индексу в выбранную ячейку
-        else { return }
-        
-        let firstLetter = self.firstLetters[indexPath.section]
-        
-        if let users = self.friendsDict[firstLetter] {
-            let user = users[indexPath.row]
-            controller.user = user
-        }
-    }
-    
-    //Метод заполнения словаря друзей
-    private func fillFriendsDict() {
-        if let filteredFriends = self.filteredFriends {
-            for user in filteredFriends {
-                let dictKey = user.firstName.first!
-                if var users = self.friendsDict[dictKey] {
-                    users.append(user)
-                    self.friendsDict[dictKey] = users
+        if segue.identifier == "ShowPhotoGallery" {
+            let controller = segue.destination as! ImagesGalleryViewController
+            if let index = tableView.indexPathForSelectedRow {
+                var friends: User
+                if filtering {
+                    //
+                    friends = allFriends[index.row]
                 } else {
-                    self.firstLetters.append(dictKey)
-                    self.friendsDict[dictKey] = [user]
+                    friends = friendSections[index.section].items[index.row]
                 }
+                controller.friend = friends
+                controller.title = ("\(friends.lastName) \(friends.firstName)")
             }
-            self.firstLetters.sort()
         }
-    }
-}
-//Search bar 1st method for the programmatic search bar  (search only by last name)
-extension MyFriendsTableController: UISearchResultsUpdating {
-    func updateSearchResults(for searchController: UISearchController) {
-        filterFriends(with: searchController.searchBar.text!)
     }
     
-    func filterFriends(with text: String) {
-        if text.isEmpty {
-            self.filteredFriends = self.friends
-            return
-        }
-        self.filteredFriends = self.friends?.filter("firstName CONTAINS[cd] %@ OR lastName CONTAINS[cd] %@", text, text)
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
 
-//Search bar 2nd method for the story board search bar (search only by first name). Yiu need to add search bar in the story board manualy
-//extension MyFriendsTableController: UISearchBarDelegate {
-//    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-//        filterFriends(with: searchText)
-//    }
-//
-//    fileprivate func filterFriends(with text: String) {
-//        if text.isEmpty {
-//            self.filteredFriends = friends
-//            return
-//        }
-//
-//        self.filteredFriends = self.friends.filter {$0.firstName.lowercased().contains(text.lowercased())}
-//    }
-//}
+extension MyFriendsTableController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        filterContentForSearchText(searchController.searchBar.text!)
+    }
+    func filterContentForSearchText(_ searchText: String) {
+        //
+        allFriends = allFriends!.filter("firstName CONTAINS[cd] %@ OR lastName CONTAINS[cd] %@")
+        //return allFriends.lastName.lowercased().contains(searchText.lowercased())
+        tableView.reloadData()
+    }
+
+}
