@@ -197,7 +197,7 @@
                     </view>
                     <connections>
                         <outlet property="webView" destination="m2c-JH-vBR" id="woL-bQ-mAH"/>
-                        <segue destination="yAH-aB-pbT" kind="presentation" identifier="ToTabBar" modalPresentationStyle="fullScreen" id="61B-gi-xv9"/>
+                        <segue destination="yAH-aB-pbT" kind="presentation" identifier="ToTabBar" modalPresentationStyle="fullScreen" id="tOE-Ph-zq2"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CuZ-By-Ju4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -1098,7 +1098,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="JBv-qd-0nr"/>
+        <segue reference="tOE-Ph-zq2"/>
         <segue reference="lnF-Mc-50w"/>
     </inferredMetricsTieBreakers>
     <resources>
